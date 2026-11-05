@@ -1,0 +1,71 @@
+/*
+ * The scene: one fixed full-viewport layer behind the story. The poster is the picture until the WebGL frame is ready,
+ * the whole scene when WebGL is unavailable, and again after a context loss.
+ * Wrapper state: data-scene-state = loading | ready | still | poster | lost
+ * The poster stays under the canvas; the canvas fades in over it when it is ready.
+ * Other signals set by scripts/activeSection.ts: data-chapter, data-faded.
+ */
+@layer features {
+  #scene {
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+    touch-action: pan-y;
+    overflow: hidden;
+    background: var(--bg);
+    /* The poster and canvas share one box, so their crop is identical. */
+    container-type: size;
+    transition: opacity 500ms ease;
+  }
+
+  #scene-canvas {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    transition: opacity var(--dur) ease;
+  }
+
+  #scene-canvas canvas {
+    touch-action: pan-y;
+  }
+
+  .scene-poster {
+    position: absolute;
+    inset: 0;
+    /* Stand-in until the posters are captured from the real scene (S3): a dim room with a cyan glow. */
+    background:
+      radial-gradient(ellipse 60% 40% at 50% 38%, rgb(94 231 255 / 0.18), transparent 70%),
+      linear-gradient(180deg, #0b1016 0%, #07090d 55%, #05070a 100%);
+  }
+
+  #scene[data-scene-state='ready'] #scene-canvas,
+  #scene[data-scene-state='still'] #scene-canvas {
+    opacity: 1;
+  }
+
+  /* A lens vignette over the whole frame (a CSS gradient: free), on in every state. */
+  #scene::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse 85% 80% at 55% 45%, transparent 50%, rgb(2 4 7 / 0.6) 100%);
+    pointer-events: none;
+  }
+
+  /* Past the contact section the scene dims to 30% (and the canvas stops rendering) so the footer reads quietly. */
+  #scene[data-faded='true'] {
+    opacity: 0.3;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    #scene,
+    #scene-canvas {
+      transition: none;
+    }
+
+    #scene[data-scene-state='still'] #scene-canvas {
+      transition: opacity 300ms ease;
+    }
+  }
+}

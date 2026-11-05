@@ -1,0 +1,7 @@
+dist
+.astro
+node_modules
+test-results
+package-lock.json
+public/models/manifest.json
+public/textures/manifest.json

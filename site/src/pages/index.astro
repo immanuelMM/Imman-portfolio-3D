@@ -1,0 +1,11 @@
+---
+import Base from '../layouts/Base.astro'
+import { CHAPTER_IDS } from '../scene/chapters'
+---
+
+<Base title="Immanuel Mahusay — Software Engineer" description="Portfolio of Immanuel Mahusay." name="Immanuel Mahusay">
+  {CHAPTER_IDS.map((id) => (
+    <section id={id} data-chapter={id} class="chapter" aria-label={id} />
+  ))}
+  <footer data-chapter-end></footer>
+</Base>

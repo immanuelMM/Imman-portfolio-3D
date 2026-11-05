@@ -1,0 +1,40 @@
+---
+import { withBase } from '../lib/withBase'
+import { CHAPTER_IDS } from '../scene/chapters'
+
+interface Props {
+  name: string
+}
+const { name } = Astro.props
+
+const labels: Record<(typeof CHAPTER_IDS)[number], string> = {
+  about: 'About',
+  experience: 'Experience',
+  ai: 'AI & Automation',
+  web: 'Web projects',
+  education: 'Education',
+  contact: 'Contact',
+}
+---
+
+<header class="site-header" data-nav>
+  <a class="brand" href={withBase('/')}>
+    <span class="brand__mark" aria-hidden="true"></span>
+    <span>{name}</span>
+  </a>
+  <nav class="site-nav" id="primary-nav" aria-label="Primary">
+    <ul>
+      {CHAPTER_IDS.map((id) => (
+        <li>
+          <a href={withBase(`/#${id}`)}>{labels[id]}</a>
+        </li>
+      ))}
+    </ul>
+  </nav>
+  <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="primary-nav" data-nav-toggle>
+    <span class="sr-only">Menu</span>
+    <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+      <path d="M4 6h16v2H4V6Zm0 5h16v2H4v-2Zm0 5h16v2H4v-2Z"></path>
+    </svg>
+  </button>
+</header>

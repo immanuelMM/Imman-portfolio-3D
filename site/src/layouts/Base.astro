@@ -1,0 +1,59 @@
+---
+import '../styles/layers.css'
+import interUrl from '@fontsource-variable/inter/files/inter-latin-wght-normal.woff2?url'
+import groteskUrl from '@fontsource-variable/space-grotesk/files/space-grotesk-latin-wght-normal.woff2?url'
+import monoUrl from '@fontsource-variable/jetbrains-mono/files/jetbrains-mono-latin-wght-normal.woff2?url'
+import Nav from '../components/Nav.astro'
+import ScenePoster from '../components/ScenePoster.astro'
+
+interface Props {
+  title: string
+  description: string
+  name: string
+}
+
+const { title, description, name } = Astro.props
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="theme-color" content="#07090d" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <slot name="head" />
+    <link rel="preload" href={groteskUrl} as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href={interUrl} as="font" type="font/woff2" crossorigin />
+    <style
+      set:html={`
+      @font-face{font-family:'Space Grotesk Variable';font-style:normal;font-display:swap;font-weight:300 700;src:url(${groteskUrl}) format('woff2-variations')}
+      @font-face{font-family:'Space Grotesk Fallback';src:local('Arial');size-adjust:104%;ascent-override:94%;descent-override:26%;line-gap-override:0%}
+      @font-face{font-family:'Inter Variable';font-style:normal;font-display:swap;font-weight:100 900;src:url(${interUrl}) format('woff2-variations')}
+      @font-face{font-family:'Inter Fallback';src:local('Arial');size-adjust:107.4%;ascent-override:90.2%;descent-override:22.5%;line-gap-override:0%}
+      @font-face{font-family:'JetBrains Mono Variable';font-style:normal;font-display:swap;font-weight:100 800;src:url(${monoUrl}) format('woff2-variations')}
+    `}
+    />
+  </head>
+  <body>
+    <a class="skip-link" href="#main">
+      Skip to content
+    </a>
+    <div id="scene" data-scene-state="loading" data-chapter="about" aria-hidden="true">
+      <ScenePoster />
+      <div id="scene-canvas"></div>
+    </div>
+    <Nav name={name} />
+    <main id="main">
+      <slot />
+    </main>
+    <slot name="footer" />
+    <slot name="print" />
+    <script>
+      import '../scripts/sceneBoot'
+      import '../scripts/activeSection'
+      import '../scripts/navMenu'
+    </script>
+  </body>
+</html>

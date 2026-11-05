@@ -1,0 +1,14 @@
+/*
+ * Cascade layers, lowest to highest priority. This statement must stay the first CSS the bundle emits so the order
+ * is fixed whichever stylesheet loads first. Every layer has a non-empty block in the eager CSS (lightningcss drops a
+ * bare leading @layer statement, so the imports below also follow this order).
+ * print.css is NOT layered: print rules need !important and must beat every layer.
+ */
+@layer reset, tokens, base, layout, components, features, utilities;
+
+@import './tokens.css';
+@import './base.css';
+@import './layout.css';
+@import './components.css';
+@import './features.css';
+@import './utilities.css';

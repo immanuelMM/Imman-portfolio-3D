@@ -1,0 +1,79 @@
+/*
+ * Design tokens for the command-center look: a near-black blue-grey room, cyan holo light, one amber accent.
+ * Text pairs are checked for 4.5:1 in docs/design.md. Sizes follow the workspace touch style: controls 56px,
+ * primary 64px, never below 48px.
+ */
+@layer tokens {
+  :root {
+    color-scheme: dark;
+
+    /* Room */
+    --bg: #07090d;
+    --surface: #0d1218;
+    --surface-2: #121922;
+    --line: #26323f;
+
+    /* Text on the scrim panels */
+    --text: #e6edf3;
+    --muted: #9fb1c2;
+
+    /* Holo cyan (links, chips, focus) and amber (status LEDs, CTA ring) */
+    --cyan: #5ee7ff;
+    --amber: #ffb547;
+    --on-cyan: #031318;
+    --on-amber: #1c1100;
+
+    --panel: color-mix(in srgb, var(--surface) 88%, transparent);
+    --focus-ring: 0 0 0 3px var(--bg), 0 0 0 6px var(--amber);
+
+    /* Type */
+    --font-display: 'Space Grotesk Variable', 'Space Grotesk Fallback', 'Segoe UI', system-ui, sans-serif;
+    --font-sans: 'Inter Variable', 'Inter Fallback', system-ui, -apple-system, 'Segoe UI', sans-serif;
+    --font-mono: 'JetBrains Mono Variable', ui-monospace, 'Cascadia Code', Consolas, monospace;
+
+    /* Radii */
+    --r-md: 12px;
+    --r-lg: 16px;
+    --r-xl: 24px;
+    --r-pill: 999px;
+
+    /* Spacing (4px scale) */
+    --sp-1: 4px;
+    --sp-2: 8px;
+    --sp-3: 12px;
+    --sp-4: 16px;
+    --sp-5: 24px;
+    --sp-6: 32px;
+    --sp-7: 48px;
+    --gutter: 16px;
+
+    /* Touch sizes */
+    --tap-min: 48px;
+    --tap: 56px;
+    --tap-primary: 64px;
+
+    /* Bars */
+    --appbar-h: 60px;
+    --cvbar-h: 72px;
+    --safe-top: env(safe-area-inset-top, 0px);
+    --safe-bottom: env(safe-area-inset-bottom, 0px);
+
+    /* Motion */
+    --dur-fast: 120ms;
+    --dur: 300ms;
+  }
+
+  @media (min-width: 640px) {
+    :root {
+      --gutter: 32px;
+      --appbar-h: 72px;
+    }
+  }
+
+  @media (min-width: 1024px) and (hover: hover) and (pointer: fine) {
+    :root {
+      --gutter: 56px;
+      --appbar-h: 64px;
+    }
+  }
+}

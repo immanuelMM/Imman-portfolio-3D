@@ -1,0 +1,23 @@
+@layer components {
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--sp-2);
+    min-height: var(--tap);
+    padding: 0 var(--sp-5);
+    border: 1px solid var(--cyan);
+    border-radius: var(--r-md);
+    background: transparent;
+    color: var(--cyan);
+    font-weight: 600;
+    text-decoration: none;
+    cursor: pointer;
+  }
+
+  .btn--primary {
+    min-height: var(--tap-primary);
+    background: var(--cyan);
+    color: var(--on-cyan);
+  }
+}
