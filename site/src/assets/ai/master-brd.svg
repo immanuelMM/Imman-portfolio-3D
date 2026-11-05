@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 300" font-family="Segoe UI, Inter, Arial, sans-serif">
+<defs>
+<linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#151230"/><stop offset="1" stop-color="#0d0f1a"/></linearGradient>
+<linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#8b5cf6"/><stop offset="1" stop-color="#ec4899"/></linearGradient>
+<linearGradient id="c" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#06b6d4"/><stop offset="1" stop-color="#8b5cf6"/></linearGradient>
+<radialGradient id="glow"><stop offset="0" stop-color="#a78bfa" stop-opacity=".35"/><stop offset="1" stop-color="#a78bfa" stop-opacity="0"/></radialGradient>
+<pattern id="grid" width="28" height="28" patternUnits="userSpaceOnUse"><path d="M28 0H0V28" fill="none" stroke="#a78bfa" stroke-opacity=".07"/></pattern>
+</defs>
+<rect width="800" height="300" fill="url(#bg)"/><rect width="800" height="300" fill="url(#grid)"/>
+<circle cx="400" cy="150" r="130" fill="url(#glow)"/>
+<g stroke="#a78bfa" stroke-opacity=".5" stroke-width="2" fill="none"><path d="M290 120 C335 120 335 150 360 150"/><path d="M440 150 C465 150 465 120 510 120"/><path d="M290 180 C335 180 335 150 360 150"/><path d="M440 150 C465 150 465 180 510 180"/></g>
+<g transform="translate(150 62)">
+<rect width="140" height="176" rx="10" fill="#1d1838" stroke="url(#g)" stroke-width="1.5"/>
+<text x="16" y="28" font-size="13" font-weight="700" fill="#f0abfc">BRD</text>
+<circle cx="22" cy="56" r="7" fill="#10b981"/><path d="M18.5 56l2.5 2.5 4.5-5" stroke="#fff" stroke-width="1.8" fill="none"/><rect x="36" y="52" width="84" height="7" rx="3.5" fill="#475569"/>
+<circle cx="22" cy="84" r="7" fill="#10b981"/><path d="M18.5 84l2.5 2.5 4.5-5" stroke="#fff" stroke-width="1.8" fill="none"/><rect x="36" y="80" width="70" height="7" rx="3.5" fill="#475569"/>
+<circle cx="22" cy="112" r="7" fill="#f43f5e"/><path d="M19 109l6 6M25 109l-6 6" stroke="#fff" stroke-width="1.8"/><rect x="36" y="108" width="78" height="7" rx="3.5" fill="#475569"/>
+<circle cx="22" cy="140" r="7" fill="#10b981"/><path d="M18.5 140l2.5 2.5 4.5-5" stroke="#fff" stroke-width="1.8" fill="none"/><rect x="36" y="136" width="62" height="7" rx="3.5" fill="#475569"/>
+</g>
+<g transform="translate(510 62)">
+<rect width="140" height="176" rx="10" fill="#1d1838" stroke="url(#c)" stroke-width="1.5"/>
+<text x="16" y="28" font-size="13" font-weight="700" fill="#67e8f9" font-family="Consolas, monospace">&lt;/code&gt;</text>
+<rect x="16" y="48" width="60" height="7" rx="3.5" fill="#8b5cf6"/><rect x="30" y="66" width="86" height="7" rx="3.5" fill="#06b6d4"/><rect x="30" y="84" width="64" height="7" rx="3.5" fill="#475569"/><rect x="44" y="102" width="74" height="7" rx="3.5" fill="#ec4899"/><rect x="30" y="120" width="52" height="7" rx="3.5" fill="#475569"/><rect x="16" y="138" width="40" height="7" rx="3.5" fill="#8b5cf6"/>
+</g>
+<circle cx="400" cy="150" r="40" fill="url(#g)"/>
+<circle cx="394" cy="144" r="14" fill="none" stroke="#fff" stroke-width="3.5"/><path d="M404 154l12 12" stroke="#fff" stroke-width="4" stroke-linecap="round"/>
+<text x="400" y="214" font-size="12" font-weight="600" fill="#e9d5ff" text-anchor="middle">Evidence Audit</text>
+</svg>

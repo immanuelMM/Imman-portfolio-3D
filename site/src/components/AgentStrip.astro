@@ -1,0 +1,32 @@
+---
+import { agents } from '../data'
+
+// Workflow order: Lead -> Planner -> Backend and Frontend in parallel -> QA -> Docs -> DevOps.
+const byId = Object.fromEntries(agents.map((a) => [a.id, a]))
+const steps = [['lead'], ['planner'], ['backend', 'frontend'], ['qa'], ['docs'], ['devops']].map((ids) =>
+  ids.map((id) => byId[id]),
+)
+---
+
+<div class="agents">
+  <h3 id="agents-title">The seven-agent workflow</h3>
+  <p class="agents__lead">Each project below is built by a team of specialised Claude Code agents, in this order.</p>
+  <ol class="agents__steps" aria-labelledby="agents-title">
+    {steps.map((group, i) => (
+      <li class="agents__step">
+        <span class="agents__num" aria-hidden="true">
+          {i + 1}
+        </span>
+        <ul class:list={['agents__group', { 'agents__group--parallel': group.length > 1 }]}>
+          {group.map((a) => (
+            <li class="agent">
+              <strong>{a.name}</strong>
+              <span>{a.role}</span>
+            </li>
+          ))}
+        </ul>
+        {group.length > 1 && <span class="sr-only">These two work in parallel.</span>}
+      </li>
+    ))}
+  </ol>
+</div>

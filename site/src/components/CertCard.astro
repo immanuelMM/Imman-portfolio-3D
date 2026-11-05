@@ -1,0 +1,19 @@
+---
+import type { Certification } from '../data'
+
+interface Props {
+  cert: Certification
+}
+const { cert } = Astro.props
+---
+
+<li class="card cert">
+  <p class="timeline__period">{cert.year}</p>
+  <h3>{cert.name}</h3>
+  <p class="timeline__org">{cert.issuer}</p>
+  {cert.link && (
+    <a class="btn btn--small btn--ghost" href={cert.link} target="_blank" rel="noopener">
+      View credential<span class="sr-only"> for {cert.name} (opens in a new tab)</span>
+    </a>
+  )}
+</li>

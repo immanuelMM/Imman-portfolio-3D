@@ -1,0 +1,77 @@
+---
+import { Picture } from 'astro:assets'
+import portrait from '../assets/profile.jpg'
+import { categoryLabel, siteData } from '../data'
+import { withBase } from '../lib/withBase'
+
+const { profile, skillCategories, aiSkills, languages } = siteData
+---
+
+<section id="about" data-chapter="about" class="chapter chapter--hero" aria-labelledby="about-title">
+  <div class="chapter__inner">
+    <div class="hero__top">
+      <Picture
+        class="hero__photo"
+        src={portrait}
+        formats={['avif', 'webp']}
+        widths={[160, 320]}
+        sizes="(min-width: 640px) 160px, 112px"
+        width={160}
+        height={160}
+        fit="cover"
+        position="top"
+        quality={70}
+        alt={`Portrait of ${profile.name}`}
+        loading="eager"
+      />
+      <div>
+        <p class="chip chip--status">
+          <span class="led" aria-hidden="true"></span>
+          {profile.availability}
+        </p>
+        <h1 id="about-title">{profile.name}</h1>
+        <p class="hero__role">{profile.title}</p>
+      </div>
+    </div>
+
+    <p class="hero__about">{profile.about}</p>
+
+    <div class="hero__cta">
+      <a class="btn btn--primary" href={withBase('/#contact')}>
+        Contact
+      </a>
+      <slot name="cv" />
+    </div>
+
+    <div class="skill-groups">
+      {skillCategories.map((c) => (
+        <div class="skill-group">
+          <p class="label">{categoryLabel(c.name)}</p>
+          <ul class="chips">
+            {c.skills.map((s) => (
+              <li class="chip">{s}</li>
+            ))}
+          </ul>
+        </div>
+      ))}
+      <div class="skill-group skill-group--ai">
+        <p class="label">AI &amp; Automation</p>
+        <ul class="chips">
+          {aiSkills.map((s) => (
+            <li class="chip chip--ai">{s}</li>
+          ))}
+        </ul>
+      </div>
+      <div class="skill-group">
+        <p class="label">Languages</p>
+        <ul class="chips">
+          {languages.map((l) => (
+            <li class="chip">
+              {l.name} <span class="chip__sub">{l.level}</span>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>

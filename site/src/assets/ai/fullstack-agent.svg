@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 300" font-family="Segoe UI, Inter, Arial, sans-serif">
+<defs>
+<linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#151230"/><stop offset="1" stop-color="#0d0f1a"/></linearGradient>
+<linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#8b5cf6"/><stop offset="1" stop-color="#ec4899"/></linearGradient>
+<linearGradient id="c" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#06b6d4"/><stop offset="1" stop-color="#8b5cf6"/></linearGradient>
+<radialGradient id="glow"><stop offset="0" stop-color="#a78bfa" stop-opacity=".35"/><stop offset="1" stop-color="#a78bfa" stop-opacity="0"/></radialGradient>
+<pattern id="grid" width="28" height="28" patternUnits="userSpaceOnUse"><path d="M28 0H0V28" fill="none" stroke="#a78bfa" stroke-opacity=".07"/></pattern>
+</defs>
+<rect width="800" height="300" fill="url(#bg)"/><rect width="800" height="300" fill="url(#grid)"/>
+<circle cx="400" cy="150" r="140" fill="url(#glow)"/>
+<g stroke="#a78bfa" stroke-opacity=".45" stroke-width="2" stroke-dasharray="5 6">
+<line x1="400" y1="150" x2="230" y2="95"/><line x1="400" y1="150" x2="230" y2="205"/>
+<line x1="400" y1="150" x2="570" y2="95"/><line x1="400" y1="150" x2="570" y2="205"/>
+<line x1="400" y1="150" x2="400" y2="81"/><line x1="400" y1="150" x2="400" y2="223"/>
+</g>
+<g font-size="12" font-weight="600" fill="#e9d5ff" text-anchor="middle">
+<rect x="172" y="76" width="116" height="38" rx="10" fill="#1d1838" stroke="url(#c)" stroke-width="1.5"/><text x="230" y="99">Planner</text><rect x="172" y="186" width="116" height="38" rx="10" fill="#1d1838" stroke="url(#c)" stroke-width="1.5"/><text x="230" y="209">QA</text>
+<rect x="512" y="76" width="116" height="38" rx="10" fill="#1d1838" stroke="url(#c)" stroke-width="1.5"/><text x="570" y="99">.NET Backend</text><rect x="512" y="186" width="116" height="38" rx="10" fill="#1d1838" stroke="url(#c)" stroke-width="1.5"/><text x="570" y="209">React Frontend</text>
+<rect x="352" y="64" width="96" height="34" rx="10" fill="#1d1838" stroke="url(#c)" stroke-width="1.5"/><text x="400" y="85">Docs</text><rect x="352" y="206" width="96" height="34" rx="10" fill="#1d1838" stroke="url(#c)" stroke-width="1.5"/><text x="400" y="227">DevOps</text>
+</g>
+<circle cx="400" cy="150" r="42" fill="none" stroke="#ec4899" stroke-opacity=".4" stroke-width="2"/>
+<circle cx="400" cy="150" r="34" fill="url(#g)"/>
+<text x="400" y="155" font-size="15" font-weight="700" fill="#fff" text-anchor="middle">Lead</text>
+<g fill="#06b6d4"><circle cx="315" cy="122" r="3.5"/><circle cx="485" cy="178" r="3.5"/><circle cx="485" cy="122" r="3"/></g>
+</svg>

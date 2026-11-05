@@ -1,0 +1,20 @@
+---
+import type { ChapterId } from '../scene/chapters'
+
+interface Props {
+  id: ChapterId
+  title: string
+  eyebrow: string
+}
+const { id, title, eyebrow } = Astro.props
+---
+
+<section id={id} data-chapter={id} class="chapter" aria-labelledby={`${id}-title`}>
+  <div class="chapter__inner">
+    <header class="chapter__head">
+      <p class="eyebrow">{eyebrow}</p>
+      <h2 id={`${id}-title`}>{title}</h2>
+    </header>
+    <slot />
+  </div>
+</section>

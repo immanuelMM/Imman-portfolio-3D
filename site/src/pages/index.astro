@@ -1,11 +1,70 @@
 ---
+import AgentStrip from '../components/AgentStrip.astro'
+import CertCard from '../components/CertCard.astro'
+import ChapterSection from '../components/ChapterSection.astro'
+import ContactBlock from '../components/ContactBlock.astro'
+import Footer from '../components/Footer.astro'
+import Hero from '../components/Hero.astro'
+import ProjectCard from '../components/ProjectCard.astro'
+import TimelineEntry from '../components/TimelineEntry.astro'
+import { SITE_TITLE, siteData } from '../data'
 import Base from '../layouts/Base.astro'
-import { CHAPTER_IDS } from '../scene/chapters'
+
+const { profile, experience, education, aiTools, webSystems, staticProjects, certifications } = siteData
 ---
 
-<Base title="Immanuel Mahusay — Software Engineer" description="Portfolio of Immanuel Mahusay." name="Immanuel Mahusay">
-  {CHAPTER_IDS.map((id) => (
-    <section id={id} data-chapter={id} class="chapter" aria-label={id} />
-  ))}
-  <footer data-chapter-end></footer>
+<Base title={SITE_TITLE} description={profile.about} name={profile.name}>
+  <Hero />
+
+  <ChapterSection id="experience" eyebrow="2013 → Present" title="Experience">
+    <ol class="timeline">
+      {experience.map((e) => (
+        <TimelineEntry entry={e} />
+      ))}
+    </ol>
+  </ChapterSection>
+
+  <ChapterSection id="ai" eyebrow="Agents and automation" title={'AI & Automation'}>
+    <AgentStrip />
+    <div class="cards">
+      {aiTools.map((p) => (
+        <ProjectCard project={p} />
+      ))}
+    </div>
+  </ChapterSection>
+
+  <ChapterSection id="web" eyebrow="Shipped to production" title="Web projects">
+    <h3 class="group-title">Web systems</h3>
+    <div class="cards">
+      {webSystems.map((p) => (
+        <ProjectCard project={p} />
+      ))}
+    </div>
+    <h3 class="group-title">Websites</h3>
+    <div class="cards">
+      {staticProjects.map((p) => (
+        <ProjectCard project={p} />
+      ))}
+    </div>
+  </ChapterSection>
+
+  <ChapterSection id="education" eyebrow="Learning" title={'Education & certifications'}>
+    <ol class="timeline">
+      {education.map((e) => (
+        <TimelineEntry entry={e} />
+      ))}
+    </ol>
+    <h3 class="group-title">Certifications</h3>
+    <ul class="cards">
+      {certifications.map((c) => (
+        <CertCard cert={c} />
+      ))}
+    </ul>
+  </ChapterSection>
+
+  <ChapterSection id="contact" eyebrow="Say hello" title="Contact">
+    <ContactBlock />
+  </ChapterSection>
+
+  <Footer slot="footer" />
 </Base>

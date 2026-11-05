@@ -1,0 +1,52 @@
+---
+import type { ImageMetadata } from 'astro'
+import type { Project } from '../data'
+
+interface Props {
+  project: Project
+}
+const { project } = Astro.props
+
+const art = import.meta.glob<{ default: ImageMetadata }>('../assets/ai/*.svg', { eager: true })
+const image = project.image ? art[`../assets/ai/${project.image}`]?.default : undefined
+const sleeps = project.live?.includes('onrender.com') ?? false
+const featured = project.featured === true
+---
+
+<article class:list={['card', 'project', { 'project--featured': featured }]}>
+  {image && (
+    <img class="project__art" src={image.src} alt="" width={800} height={300} loading="lazy" decoding="async" />
+  )}
+  <div class="project__body">
+    {project.badge && <p class="chip chip--status">{project.badge}</p>}
+    <h3>{project.title}</h3>
+    <p class="project__desc">{project.desc}</p>
+    {project.highlights && project.highlights.length > 0 && (
+      <ul class="bullets">
+        {project.highlights.map((h) => (
+          <li>{h}</li>
+        ))}
+      </ul>
+    )}
+    <ul class="chips" aria-label="Technologies">
+      {project.tags.map((t) => (
+        <li class="chip">{t}</li>
+      ))}
+    </ul>
+    {(project.live || project.code) && (
+      <div class="project__links">
+        {project.live && (
+          <a class="btn btn--small" href={project.live} target="_blank" rel="noopener">
+            Live<span class="sr-only"> demo of {project.title} (opens in a new tab)</span>
+          </a>
+        )}
+        {project.code && (
+          <a class="btn btn--small btn--ghost" href={project.code} target="_blank" rel="noopener">
+            Code<span class="sr-only"> for {project.title} on GitHub (opens in a new tab)</span>
+          </a>
+        )}
+      </div>
+    )}
+    {sleeps && <p class="note">Free hosting: the demo may take about a minute to wake up.</p>}
+  </div>
+</article>

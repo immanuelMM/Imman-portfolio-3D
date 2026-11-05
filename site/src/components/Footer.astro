@@ -1,0 +1,25 @@
+---
+import { credits, siteData } from '../data'
+
+const year = new Date().getFullYear()
+---
+
+<footer class="site-footer" data-chapter-end>
+  <p>
+    © {year} {siteData.profile.name}. Built with Astro and three.js.
+  </p>
+  <details class="credits">
+    <summary>Credits</summary>
+    <ul>
+      {credits.map((c) => (
+        <li>
+          {c.what} by{' '}
+          <a href={c.url} target="_blank" rel="noopener">
+            {c.by}
+          </a>
+          , {c.licence}.
+        </li>
+      ))}
+    </ul>
+  </details>
+</footer>

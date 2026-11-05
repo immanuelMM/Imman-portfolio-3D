@@ -1,0 +1,36 @@
+---
+import { siteData } from '../data'
+
+const { profile } = siteData
+const tel = `tel:${profile.phone.replace(/[^\d+]/g, '')}`
+---
+
+<ul class="contact" aria-label="Contact details">
+  {profile.emails.map((email) => (
+    <li>
+      <a class="contact__row" href={`mailto:${email}`}>
+        <span class="label">Email</span>
+        <span class="contact__value">{email}</span>
+      </a>
+    </li>
+  ))}
+  <li>
+    <a class="contact__row" href={tel}>
+      <span class="label">Phone</span>
+      <span class="contact__value">{profile.phone}</span>
+    </a>
+  </li>
+  <li>
+    <a class="contact__row" href={profile.github} target="_blank" rel="noopener">
+      <span class="label">GitHub</span>
+      <span class="contact__value">{profile.github.replace('https://', '')}</span>
+      <span class="sr-only"> (opens in a new tab)</span>
+    </a>
+  </li>
+  <li>
+    <p class="contact__row contact__row--static">
+      <span class="label">Location</span>
+      <span class="contact__value">{profile.city}</span>
+    </p>
+  </li>
+</ul>
