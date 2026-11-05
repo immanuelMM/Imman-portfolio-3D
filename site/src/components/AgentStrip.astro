@@ -21,7 +21,7 @@ const steps = WORKFLOW_STEPS.map((ids) => ids.map((id) => byId[id]))
         <ul class:list={['agents__group', { 'agents__group--parallel': group.length > 1 }]}>
           {group.map((a) => (
             <li>
-              <button type="button" class="agent" data-agent={a.id} aria-haspopup="dialog">
+              <button type="button" class="agent" data-agent={a.id} data-hl={`agent:${a.id}`} aria-haspopup="dialog">
                 <strong>{a.name}</strong>
                 <span class="agent__role">{a.role}</span>
                 <span class="agent__more" aria-hidden="true">

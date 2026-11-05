@@ -22,6 +22,7 @@ import {
 import { agents } from '../data/agents'
 import { type QualityTier } from '../lib/quality'
 import { agentCards } from '../lib/agentCards'
+import { sceneHighlight } from '../lib/sceneHighlights'
 import type { ChapterState } from './chapterProgress'
 import { createHoloMaterial } from './holoMaterial'
 import { AGENT_PANELS, AGENT_PANELS_TALL, ARC, PANEL_FLOOR_GAP } from './layout'
@@ -248,6 +249,16 @@ export default function AgentPanels({ tier, motion, chapter }: Props) {
   const applied = useRef<number[]>(panels.map(() => 0))
   const gain = useRef({ pulse: 0, dim: 1 })
   const selected = useRef<string | null>(agentCards.get().agentId)
+  // an agent item in a chapter card (hover, focus or tap) lights its panel too
+  const pointed = useRef<string | null>(null)
+  useEffect(
+    () =>
+      sceneHighlight.subscribe((h) => {
+        pointed.current = h?.kind === 'agent' ? h.id : null
+        invalidate()
+      }),
+    [invalidate],
+  )
   useEffect(
     () =>
       agentCards.subscribe((state) => {
@@ -272,7 +283,8 @@ export default function AgentPanels({ tier, motion, chapter }: Props) {
       const id = panels[i]?.agentId
       const lead = id === 'lead'
       const base = (lead ? 1.0 : 0.6) * (lead ? 1 : g.dim)
-      const want = id !== undefined && (id === hovered.current || id === selected.current) ? 1 : 0
+      const want =
+        id !== undefined && (id === hovered.current || id === selected.current || id === pointed.current) ? 1 : 0
       levels.current[i] = damp(levels.current[i] ?? 0, want, dt, 10)
       if (Math.abs(levels.current[i] - want) > 0.004) settling = true
       else levels.current[i] = want

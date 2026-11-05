@@ -22,7 +22,7 @@ const { profile, experience, education, aiTools, webSystems, staticProjects, cer
   <ChapterSection id="experience" eyebrow="2013 → Present" title="Experience">
     <ol class="timeline">
       {experience.map((e) => (
-        <TimelineEntry entry={e} />
+        <TimelineEntry entry={e} collapsible />
       ))}
     </ol>
   </ChapterSection>

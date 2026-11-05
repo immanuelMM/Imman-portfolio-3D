@@ -1,0 +1,218 @@
+/*
+ * Glass chapter cards. The room shows through a dark, blurred, slightly dimmed pane; nested items (timeline entries, project
+ * cards, agent items, chips, contact rows) are lighter glass on top of it, never solid boxes. The backdrop is also dimmed
+ * (brightness) so text stays WCAG AA over the brightest part of the scene (measured by scripts/contrast-check.mjs).
+ * Interaction (fine pointer only): the card leans up to 4 degrees toward the cursor and a radial highlight follows it
+ * (scripts/glass.ts writes --rx --ry --mx --my); nested items lift and glow on hover. Reduced motion: no tilt, no lift.
+ */
+@layer features {
+  :root {
+    --glass: rgb(10 14 20 / 0.5);
+    --glass-edge: rgb(255 255 255 / 0.16);
+    --glass-soft: rgb(255 255 255 / 0.05);
+    --glass-soft-edge: rgb(255 255 255 / 0.13);
+    --glow: rgb(94 231 255 / 0.55);
+  }
+
+  .chapter__inner {
+    position: relative;
+    isolation: isolate;
+    background: var(--glass);
+    -webkit-backdrop-filter: blur(16px) saturate(140%) brightness(0.74);
+    backdrop-filter: blur(16px) saturate(140%) brightness(0.74);
+    border: 1px solid var(--glass-edge);
+    box-shadow:
+      inset 0 1px 0 rgb(255 255 255 / 0.14),
+      inset 0 0 36px rgb(255 255 255 / 0.03),
+      0 18px 50px -22px rgb(0 0 0 / 0.65);
+  }
+
+  /* the cursor-following highlight sits above the pane, below the content */
+  .chapter__inner::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    border-radius: inherit;
+    pointer-events: none;
+    opacity: 0;
+    background: radial-gradient(
+      circle at var(--mx, 50%) var(--my, 0%),
+      rgb(255 255 255 / 0.09),
+      rgb(94 231 255 / 0.04) 28%,
+      transparent 55%
+    );
+    transition: opacity 200ms ease;
+  }
+
+  /* Nested items: lighter glass. */
+  .card,
+  .agent,
+  .contact__row,
+  .timeline__item {
+    background: var(--glass-soft);
+    border: 1px solid var(--glass-soft-edge);
+    box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.07);
+  }
+
+  .timeline__item {
+    padding: var(--sp-3) var(--sp-4);
+    border-radius: var(--r-md);
+  }
+
+  .timeline__item::before {
+    top: 20px;
+  }
+
+  .chip {
+    background: rgb(255 255 255 / 0.06);
+    border-color: var(--glass-soft-edge);
+  }
+
+  .chip--ai {
+    background: color-mix(in srgb, var(--amber) 12%, transparent);
+  }
+
+  .project__art {
+    border-bottom-color: var(--glass-soft-edge);
+  }
+
+  /* Experience entries: the role is a button that shows or hides the bullets. */
+  .timeline__toggle {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--sp-3);
+    width: 100%;
+    min-height: var(--tap-min);
+    margin: 0;
+    padding: 0;
+    border: 0;
+    border-radius: var(--r-md);
+    background: none;
+    color: inherit;
+    font: inherit;
+    text-align: left;
+    cursor: pointer;
+  }
+
+  .timeline__chev {
+    flex: none;
+    width: 10px;
+    height: 10px;
+    margin-right: var(--sp-1);
+    border-right: 2px solid var(--cyan);
+    border-bottom: 2px solid var(--cyan);
+    transform: rotate(45deg) translate(-2px, -2px);
+    transition: transform 180ms ease;
+  }
+
+  .timeline__toggle[aria-expanded='true'] .timeline__chev {
+    transform: rotate(-135deg) translate(-2px, -2px);
+  }
+
+  /* `.bullets` sets display, which would beat the UA rule for [hidden]. */
+  [data-expand-panel][hidden] {
+    display: none;
+  }
+
+  /* Hover glow works on every pointer that can hover (colour and shadow only). */
+  @media (hover: hover) and (pointer: fine) {
+    .card,
+    .agent,
+    .contact__row,
+    .timeline__item,
+    .btn,
+    .chip,
+    .site-nav a {
+      transition:
+        transform 160ms ease,
+        box-shadow 160ms ease,
+        border-color 160ms ease,
+        background-color 160ms ease,
+        text-shadow 160ms ease;
+    }
+
+    .card:hover,
+    .agent:hover,
+    a.contact__row:hover,
+    .timeline__item:hover {
+      border-color: color-mix(in srgb, var(--cyan) 70%, transparent);
+      background: rgb(94 231 255 / 0.08);
+      box-shadow:
+        inset 0 1px 0 rgb(255 255 255 / 0.1),
+        0 0 0 1px rgb(94 231 255 / 0.28),
+        0 10px 28px -10px var(--glow);
+    }
+
+    .btn:hover {
+      box-shadow: 0 0 20px var(--glow);
+    }
+
+    a.chip:hover,
+    .chip:hover {
+      border-color: var(--cyan);
+      box-shadow: 0 0 14px var(--glow);
+    }
+
+    .site-nav a:hover {
+      text-shadow: 0 0 14px var(--glow);
+    }
+  }
+
+  /* Lift and tilt: fine pointer and motion allowed only. */
+  @media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
+    .card:hover,
+    .agent:hover,
+    a.contact__row:hover,
+    .timeline__item:hover {
+      transform: translateY(-2px);
+    }
+
+    .chapter__inner {
+      transform: perspective(1100px) rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg));
+      transition: transform 180ms ease-out;
+    }
+
+    .chapter__inner[data-hot]::before {
+      opacity: 1;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .timeline__chev {
+      transition: none;
+    }
+  }
+
+  /* Phone tier: blur is the expensive part, so a smaller radius and a more solid fill. */
+  @media (pointer: coarse) and (max-width: 639px) {
+    .chapter__inner {
+      background: rgb(10 14 20 / 0.64);
+      -webkit-backdrop-filter: blur(8px) brightness(0.74);
+      backdrop-filter: blur(8px) brightness(0.74);
+    }
+  }
+
+  /* No backdrop-filter: a nearly opaque pane instead. */
+  @supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+    .chapter__inner {
+      background: rgb(8 11 16 / 0.93);
+    }
+  }
+
+  @media (prefers-reduced-transparency: reduce) {
+    .chapter__inner {
+      background: rgb(8 11 16 / 0.96);
+      -webkit-backdrop-filter: none;
+      backdrop-filter: none;
+    }
+
+    .card,
+    .agent,
+    .contact__row,
+    .timeline__item {
+      background: rgb(22 30 40 / 0.9);
+    }
+  }
+}

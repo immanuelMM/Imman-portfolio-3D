@@ -11,9 +11,14 @@ const art = import.meta.glob<{ default: ImageMetadata }>('../assets/ai/*.svg', {
 const image = project.image ? art[`../assets/ai/${project.image}`]?.default : undefined
 const sleeps = project.live?.includes('onrender.com') ?? false
 const featured = project.featured === true
+// hovering, focusing or tapping the card lights this project's screen in the 3D room (scripts/highlightLinks.ts)
+const screen = project.image ? project.image.replace(/\.svg$/, '') : undefined
 ---
 
-<article class:list={['card', 'project', { 'project--featured': featured }]}>
+<article
+  class:list={['card', 'project', { 'project--featured': featured }]}
+  data-hl={screen ? `screen:${screen}` : undefined}
+>
   {image && (
     <img class="project__art" src={image.src} alt="" width={800} height={300} loading="lazy" decoding="async" />
   )}

@@ -4,14 +4,25 @@ export interface HoloOptions {
   tint?: Color
   /** output multiplier; above 1 the glyph strokes pass the bloom threshold */
   intensity?: number
+  /** a per-vertex `aGlow` attribute (0..1) lights part of the geometry (the project-screen atlas: one cell per quad) */
+  vertexGlow?: boolean
   /** strength of the glowing rim at the texture's edge, 0..1 (default 1; 0 for an atlas, whose edges are not the panel's) */
   rim?: number
 }
 
 const vertex = /* glsl */ `
   varying vec2 vUv;
+  varying float vGlow;
+  #ifdef VERTEX_GLOW
+    attribute float aGlow;
+  #endif
   void main() {
     vUv = uv;
+    #ifdef VERTEX_GLOW
+      vGlow = aGlow;
+    #else
+      vGlow = 0.0;
+    #endif
     gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
   }
 `
@@ -25,6 +36,7 @@ const fragment = /* glsl */ `
   uniform float uIntensity;
   uniform float uRim;
   varying vec2 vUv;
+  varying float vGlow;
 
   void main() {
     vec4 tex = texture2D(uMap, vUv);
@@ -35,10 +47,12 @@ const fragment = /* glsl */ `
     vec2 e = min(vUv, 1.0 - vUv);
     float rim = smoothstep(0.035, 0.0, min(e.x * 0.55, e.y * 0.3)) * uRim;
     float lum = max(tex.r, max(tex.g, tex.b));
-    float glow = lum * (0.45 + 0.85 * uActive) + sweep * tex.a * 0.5;
+    float glow = lum * (0.45 + 0.85 * uActive + 0.5 * vGlow) + sweep * tex.a * 0.5;
     vec3 col = tex.rgb * glow * scan * uTint * uIntensity;
     col += uTint * rim * (0.35 + 0.6 * uActive) * uIntensity * 0.9;
-    float alpha = clamp(tex.a * (0.55 + 0.45 * uActive) + rim * 0.5, 0.0, 1.0) * uFlicker;
+    // a lit cell (vGlow, per vertex) also gets a faint cyan wash behind its art so it reads as switched on
+    col += uTint * vGlow * 0.012 * uIntensity;
+    float alpha = clamp(tex.a * (0.55 + 0.45 * uActive) + rim * 0.5 + vGlow * 0.1, 0.0, 1.0) * uFlicker;
     gl_FragColor = vec4(col * uFlicker, alpha);
     #include <colorspace_fragment>
   }
@@ -62,6 +76,7 @@ export function createHoloMaterial(map: Texture, opts: HoloOptions = {}): Shader
     },
     vertexShader: vertex,
     fragmentShader: fragment,
+    defines: opts.vertexGlow ? { VERTEX_GLOW: '' } : {},
     transparent: true,
     blending: AdditiveBlending,
     depthWrite: false,

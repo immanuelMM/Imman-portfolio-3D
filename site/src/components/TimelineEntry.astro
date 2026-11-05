@@ -3,16 +3,29 @@ import type { Entry } from '../data'
 
 interface Props {
   entry: Entry
+  /** Role becomes a button that shows or hides the bullets (the experience timeline). Rendered open: scripts/expand.ts collapses. */
+  collapsible?: boolean
 }
-const { entry } = Astro.props
+const { entry, collapsible = false } = Astro.props
+const panelId = `bullets-${entry.id}`
+const toggle = collapsible && entry.bullets.length > 0
 ---
 
-<li class="timeline__item">
+<li class="timeline__item" data-expand-item={toggle ? '' : undefined}>
   <p class="timeline__period">{entry.period}</p>
-  <h3>{entry.role}</h3>
+  {toggle ? (
+    <h3>
+      <button type="button" class="timeline__toggle" aria-expanded="true" aria-controls={panelId} data-expand-toggle>
+        <span>{entry.role}</span>
+        <span class="timeline__chev" aria-hidden="true" />
+      </button>
+    </h3>
+  ) : (
+    <h3>{entry.role}</h3>
+  )}
   <p class="timeline__org">{entry.org}</p>
   {entry.bullets.length > 0 && (
-    <ul class="bullets">
+    <ul class="bullets" id={toggle ? panelId : undefined} data-expand-panel={toggle ? '' : undefined}>
       {entry.bullets.map((b) => (
         <li>{b}</li>
       ))}
