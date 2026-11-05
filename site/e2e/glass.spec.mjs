@@ -80,10 +80,26 @@ const highlight = (page) => page.evaluate(() => document.getElementById('scene')
 
   // glass
   const filter = await page.locator('#experience .chapter__inner').evaluate((el) => getComputedStyle(el).backdropFilter)
-  assert.match(filter, /blur\(1[4-8]px\)/)
+  assert.match(filter, /blur\(14px\)/)
   const fill = await page.locator('#experience .chapter__inner').evaluate((el) => getComputedStyle(el).backgroundColor)
-  assert.match(fill, /^rgba\(10, 14, 20, 0\.[3-6]/)
+  assert.match(fill, /^rgba\(10, 14, 20, 0\.3/)
   ok(`chapter card is glass: ${filter}, fill ${fill}`)
+
+  // contact keeps its solid look and never tilts
+  const contact = page.locator('#contact .chapter__inner')
+  await contact.scrollIntoViewIfNeeded()
+  const cbox = await contact.boundingBox()
+  await page.mouse.move(cbox.x + cbox.width * 0.9, cbox.y + cbox.height * 0.2, { steps: 3 })
+  await page.waitForTimeout(300)
+  const solid = await contact.evaluate((el) => ({
+    fill: getComputedStyle(el).backgroundColor,
+    transform: getComputedStyle(el).transform,
+    hot: el.hasAttribute('data-hot'),
+  }))
+  assert.equal(solid.transform, 'none')
+  assert.equal(solid.hot, false)
+  assert.match(solid.fill, /0\.88\)$/) // the original panel: 88% of the surface colour
+  ok(`contact card stays solid (${solid.fill}) and does not tilt`)
 
   // highlight: hover, keyboard focus, click still opens the card
   await page.locator('#ai').scrollIntoViewIfNeeded()

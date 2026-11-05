@@ -55,7 +55,10 @@ window.addEventListener(
     if (e.pointerType !== 'mouse') return
     x = e.clientX
     y = e.clientY
-    card = (e.target instanceof Element ? e.target : null)?.closest<HTMLElement>('.chapter__inner') ?? null
+    card =
+      (e.target instanceof Element ? e.target : null)?.closest<HTMLElement>(
+        ".chapter:not([data-chapter='contact']) .chapter__inner",
+      ) ?? null
     schedule()
   },
   { passive: true },

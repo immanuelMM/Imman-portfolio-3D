@@ -7,7 +7,7 @@
  */
 @layer features {
   :root {
-    --glass: rgb(10 14 20 / 0.5);
+    --glass: rgb(10 14 20 / 0.34);
     --glass-edge: rgb(255 255 255 / 0.16);
     --glass-soft: rgb(255 255 255 / 0.05);
     --glass-soft-edge: rgb(255 255 255 / 0.13);
@@ -18,8 +18,8 @@
     position: relative;
     isolation: isolate;
     background: var(--glass);
-    -webkit-backdrop-filter: blur(16px) saturate(140%) brightness(0.74);
-    backdrop-filter: blur(16px) saturate(140%) brightness(0.74);
+    -webkit-backdrop-filter: blur(14px) saturate(140%) brightness(0.62);
+    backdrop-filter: blur(14px) saturate(140%) brightness(0.62);
     border: 1px solid var(--glass-edge);
     box-shadow:
       inset 0 1px 0 rgb(255 255 255 / 0.14),
@@ -116,6 +116,26 @@
     display: none;
   }
 
+  /* The Contact card keeps its original solid look (and no tilt): only the shared hover styles on links apply. */
+  .chapter[data-chapter='contact'] .chapter__inner {
+    background: var(--panel);
+    -webkit-backdrop-filter: blur(16px);
+    backdrop-filter: blur(16px);
+    border-color: color-mix(in srgb, var(--line) 80%, transparent);
+    box-shadow: none;
+    transform: none;
+  }
+
+  .chapter[data-chapter='contact'] .chapter__inner::before {
+    display: none;
+  }
+
+  .chapter[data-chapter='contact'] .contact__row {
+    background: var(--surface-2);
+    border-color: var(--line);
+    box-shadow: none;
+  }
+
   /* Hover glow works on every pointer that can hover (colour and shadow only). */
   @media (hover: hover) and (pointer: fine) {
     .card,
@@ -188,9 +208,9 @@
   /* Phone tier: blur is the expensive part, so a smaller radius and a more solid fill. */
   @media (pointer: coarse) and (max-width: 639px) {
     .chapter__inner {
-      background: rgb(10 14 20 / 0.64);
-      -webkit-backdrop-filter: blur(8px) brightness(0.74);
-      backdrop-filter: blur(8px) brightness(0.74);
+      background: rgb(10 14 20 / 0.5);
+      -webkit-backdrop-filter: blur(8px) brightness(0.62);
+      backdrop-filter: blur(8px) brightness(0.62);
     }
   }
 

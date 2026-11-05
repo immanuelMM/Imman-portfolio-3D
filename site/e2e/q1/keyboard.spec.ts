@@ -1,0 +1,142 @@
+// Keyboard-only: Tab through the whole page. Every visible interactive element is reachable, no trap, each focus has a
+// visible indicator and is not hidden behind the sticky header/bar; then Enter/Space operate the controls.
+import { expect, test } from '@playwright/test'
+import { instantScroll, openSession, waitSceneState, type Session } from './support'
+
+test.describe.configure({ mode: 'serial' })
+
+let s: Session
+test.beforeAll(async ({ browser }, info) => {
+  s = await openSession(browser, info)
+  await waitSceneState(s.page)
+})
+test.afterAll(async () => {
+  await s?.ctx.close()
+})
+
+type Stop = { idx: number | null; desc: string; indicator: boolean; clear: boolean }
+
+test('Tab reaches every visible control, has a visible focus ring, never gets trapped or covered', async ({}, info) => {
+  const { page } = s
+  await instantScroll(page, 0)
+  // Mark the controls a keyboard user should be able to reach (visible, not in a closed <details> or hidden/inert tree).
+  const expected = await page.evaluate(() => {
+    const sel = 'a[href], button:not([disabled]), summary, input, select, textarea, [tabindex]:not([tabindex="-1"])'
+    const all = Array.from(document.querySelectorAll<HTMLElement>(sel)).filter((el) => {
+      if (el.closest('[hidden], [inert], #cv-print, dialog:not([open]), #agent-dialog')) return false
+      const closedDetails = el.closest('details:not([open])')
+      if (closedDetails && !(el.tagName === 'SUMMARY' && el.parentElement === closedDetails)) return false
+      const cs = getComputedStyle(el)
+      return cs.visibility !== 'hidden' && cs.display !== 'none' && el.getClientRects().length > 0
+    })
+    all.forEach((el, i) => el.setAttribute('data-kb-idx', String(i)))
+    return all.map((el) => (el.textContent ?? '').trim().replace(/\s+/g, ' ').slice(0, 40) || el.getAttribute('aria-label') || el.tagName)
+  })
+  expect(expected.length).toBeGreaterThan(40)
+
+  const stops: Stop[] = []
+  const seen = new Set<number>()
+  await page.evaluate(() => (document.activeElement as HTMLElement | null)?.blur())
+  for (let i = 0; i < expected.length * 2 + 10; i++) {
+    await page.keyboard.press('Tab')
+    const stop = await page.evaluate(async (): Promise<Stop | 'body'> => {
+      const el = document.activeElement as HTMLElement | null
+      if (!el || el === document.body || el === document.documentElement) return 'body'
+      // let smooth scrolling finish (position unchanged for 2 frames)
+      let last = -1
+      for (let k = 0; k < 60; k++) {
+        const y = el.getBoundingClientRect().top
+        if (y === last) break
+        last = y
+        await new Promise((r) => requestAnimationFrame(() => r(null)))
+      }
+      const cs = getComputedStyle(el)
+      const ring = (cs.outlineStyle !== 'none' && parseFloat(cs.outlineWidth) > 0) || cs.boxShadow !== 'none'
+      // some controls draw the ring on a wrapper (e.g. a card with :focus-within)
+      const wrapCs = el.parentElement ? getComputedStyle(el.parentElement) : cs
+      const wrapRing = wrapCs.outlineStyle !== 'none' || wrapCs.boxShadow !== 'none'
+      const r = el.getBoundingClientRect()
+      const cx = Math.min(Math.max(r.left + r.width / 2, 1), innerWidth - 1)
+      const cy = Math.min(Math.max(r.top + Math.min(r.height / 2, 20), 1), innerHeight - 1)
+      const top = document.elementFromPoint(cx, cy)
+      const clear = !!top && (top === el || el.contains(top) || top.contains(el))
+      const idx = el.getAttribute('data-kb-idx')
+      return {
+        idx: idx === null ? null : Number(idx),
+        desc: `${el.tagName.toLowerCase()}${el.className ? '.' + String(el.className).split(' ')[0] : ''} "${(el.textContent ?? '').trim().slice(0, 28)}"`,
+        indicator: ring || wrapRing,
+        clear,
+      }
+    })
+    if (stop === 'body') break // focus left the document: the end of the tab order, no trap
+    stops.push(stop)
+    if (stop.idx !== null) seen.add(stop.idx)
+    if (seen.size === expected.length) break
+  }
+
+  const missing = expected.filter((_, i) => !seen.has(i))
+  const noRing = stops.filter((x) => !x.indicator).map((x) => x.desc)
+  const covered = stops.filter((x) => !x.clear).map((x) => x.desc)
+  info.annotations.push({ type: 'tab-stops', description: `${stops.length} stops, ${expected.length} expected` })
+  expect(missing, 'controls never reached by Tab').toEqual([])
+  expect(noRing, 'focus without a visible indicator').toEqual([])
+  expect(covered, 'focused control covered by another element (sticky header/bar)').toEqual([])
+})
+
+test('skip link jumps to the main content', async () => {
+  const { page } = s
+  await instantScroll(page, 3000)
+  await page.evaluate(() => {
+    ;(document.activeElement as HTMLElement | null)?.blur()
+    window.scrollTo({ top: 0, behavior: 'instant' })
+  })
+  await page.keyboard.press('Tab')
+  const first = page.locator('.skip-link')
+  await expect(first).toBeFocused()
+  await expect(first).toBeVisible()
+  await page.keyboard.press('Enter')
+  await expect(page).toHaveURL(/#main$/)
+})
+
+test('Enter on a nav link moves to the chapter; Space and Enter toggle an experience entry', async () => {
+  const { page } = s
+  await instantScroll(page, 0)
+  const toggle = page.locator('[data-nav-toggle]')
+  if (await toggle.isVisible()) {
+    await toggle.focus()
+    await page.keyboard.press('Enter')
+    await expect(toggle).toHaveAttribute('aria-expanded', 'true')
+    await expect(page.locator('#primary-nav a').first()).toBeVisible()
+    await page.keyboard.press('Escape') // the menu closes on Escape, or we close it below
+    if ((await toggle.getAttribute('aria-expanded')) === 'true') await toggle.press('Enter')
+  }
+  const link = page.locator('#primary-nav a[href$="#web"]')
+  if (!(await link.isVisible())) await toggle.press('Enter')
+  await link.focus()
+  await page.keyboard.press('Enter')
+  await expect.poll(() => page.evaluate(() => document.getElementById('scene')!.dataset.chapter), { timeout: 20_000 }).toBe('web')
+
+  const btn = page.locator('[data-expand-toggle]').nth(1)
+  await btn.focus()
+  const before = await btn.getAttribute('aria-expanded')
+  await page.keyboard.press('Space')
+  await expect(btn).not.toHaveAttribute('aria-expanded', before!)
+  await page.keyboard.press('Enter')
+  await expect(btn).toHaveAttribute('aria-expanded', before!)
+})
+
+test('the agent dialog is operable by keyboard alone and focus returns', async () => {
+  const { page } = s
+  const btn = page.locator('.agent[data-agent="docs"]')
+  await btn.evaluate((el) => el.scrollIntoView({ block: 'center', behavior: 'instant' }))
+  await btn.focus()
+  await page.keyboard.press('Space')
+  await expect(page.locator('#agent-dialog')).toBeVisible()
+  await page.keyboard.press('Escape')
+  await expect(page.locator('#agent-dialog')).toBeHidden()
+  await expect(btn).toBeFocused()
+})
+
+test('no console errors', async () => {
+  expect(s.errors).toEqual([])
+})
