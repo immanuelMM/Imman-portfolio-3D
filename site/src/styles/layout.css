@@ -182,9 +182,14 @@
     }
 
     .chapter__inner {
-      width: min(44vw, 700px);
+      width: min(44vw, 560px);
       max-width: none;
       margin-inline: 0;
+    }
+
+    /* Alternating sides: the section stays a full-width, pointer-transparent box; only the card catches events. */
+    .chapter[data-side='right'] .chapter__inner {
+      margin-left: auto;
     }
   }
 

@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { CHAPTER_POSES, focusPose, poseAt, poseKindFor, reducedPose, resolvePose, type PoseKind } from './cameraPoses'
-import { CHAPTER_IDS } from './chapters'
+import { CHAPTER_IDS, CHAPTER_SIDES } from './chapters'
 import { AGENT_PANELS, heroPoseFor } from './layout'
 
 const KINDS: PoseKind[] = ['landscape', 'portrait']
@@ -88,5 +88,20 @@ describe('chapter camera poses', () => {
         expect(pose.target[0]).toBeCloseTo(panel.position[0])
         expect(dist(pose.position, panel.position)).toBeGreaterThan(3)
       }
+  })
+
+  it('gives every chapter a card side, alternating from About (left), with the subject framed in the open half', () => {
+    CHAPTER_IDS.forEach((id, i) => {
+      expect(CHAPTER_SIDES[id]).toBe(i % 2 === 0 ? 'left' : 'right')
+      const shift = CHAPTER_POSES[id].landscape.shiftX
+      // card on the left -> scene pushed right (positive shift); card on the right -> pushed left
+      expect(Math.sign(shift)).toBe(CHAPTER_SIDES[id] === 'left' ? 1 : -1)
+      expect(Math.abs(shift)).toBeGreaterThan(0.2)
+      expect(resolvePose(CHAPTER_POSES[id].landscape, 1.6).offsetX).toBeCloseTo(shift * 1.6)
+    })
+  })
+
+  it('keeps the portrait poses unshifted horizontally (one stacked column)', () => {
+    for (const id of CHAPTER_IDS) expect(CHAPTER_POSES[id].portrait.shiftX).toBe(0)
   })
 })

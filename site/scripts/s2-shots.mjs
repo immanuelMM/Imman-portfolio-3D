@@ -15,6 +15,7 @@ const agent = flag('agent', 'qa')
 const CHAPTERS = ['about', 'experience', 'ai', 'web', 'education', 'contact']
 const sizes = [
   ['desktop', 1440, 900, false],
+  ['laptop', 1024, 768, false],
   ['tablet', 820, 1180, true],
   ['phone', 390, 844, true],
   ['phone2', 360, 740, true],

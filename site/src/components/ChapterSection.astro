@@ -1,5 +1,5 @@
 ---
-import type { ChapterId } from '../scene/chapters'
+import { CHAPTER_SIDES, type ChapterId } from '../scene/chapters'
 
 interface Props {
   id: ChapterId
@@ -9,7 +9,7 @@ interface Props {
 const { id, title, eyebrow } = Astro.props
 ---
 
-<section id={id} data-chapter={id} class="chapter" aria-labelledby={`${id}-title`}>
+<section id={id} data-chapter={id} data-side={CHAPTER_SIDES[id]} class="chapter" aria-labelledby={`${id}-title`}>
   <div class="chapter__inner">
     <header class="chapter__head">
       <p class="eyebrow">{eyebrow}</p>

@@ -3,11 +3,18 @@ import { Picture } from 'astro:assets'
 import portrait from '../assets/profile.jpg'
 import { categoryLabel, siteData } from '../data'
 import { withBase } from '../lib/withBase'
+import { CHAPTER_SIDES } from '../scene/chapters'
 
 const { profile, skillCategories, aiSkills, languages } = siteData
 ---
 
-<section id="about" data-chapter="about" class="chapter chapter--hero" aria-labelledby="about-title">
+<section
+  id="about"
+  data-chapter="about"
+  data-side={CHAPTER_SIDES.about}
+  class="chapter chapter--hero"
+  aria-labelledby="about-title"
+>
   <div class="chapter__inner">
     <div class="hero__top">
       <Picture

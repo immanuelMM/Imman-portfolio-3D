@@ -1,4 +1,4 @@
-import { CHAPTER_IDS, type ChapterId } from './chapters'
+import { CHAPTER_IDS, CHAPTER_SIDES, type ChapterId } from './chapters'
 import { HERO_CAMERA, type AgentPanelSpec, type Vec3 } from './layout'
 
 /**
@@ -27,11 +27,12 @@ export interface ResolvedPose {
 
 export type PoseKind = 'landscape' | 'portrait'
 
-const L = (position: Vec3, target: Vec3, fov: number): ScenePose => ({
+/** Landscape pose: the subject is shifted into the half opposite the card (card left -> subject right, positive shift). */
+const L = (chapter: ChapterId, position: Vec3, target: Vec3, fov: number): ScenePose => ({
   position,
   target,
   fov,
-  shiftX: 0.235,
+  shiftX: CHAPTER_SIDES[chapter] === 'left' ? 0.235 : -0.235,
   shiftY: 0,
 })
 const P = (position: Vec3, target: Vec3, hHalf: number, shiftY = 0.16): ScenePose => ({
@@ -50,27 +51,27 @@ const P = (position: Vec3, target: Vec3, hHalf: number, shiftY = 0.16): ScenePos
  */
 export const CHAPTER_POSES: Record<ChapterId, Record<PoseKind, ScenePose>> = {
   about: {
-    landscape: L(HERO_CAMERA.position, HERO_CAMERA.target, HERO_CAMERA.fov),
+    landscape: L('about', HERO_CAMERA.position, HERO_CAMERA.target, HERO_CAMERA.fov),
     portrait: P([0, 2.0, 7.6], [0, 1.3, -3], 24),
   },
   experience: {
-    landscape: L([-1.4, 1.75, 6.6], [-4.0, 1.5, 1.2], 42),
+    landscape: L('experience', [-1.4, 1.75, 6.6], [-4.0, 1.5, 1.2], 42),
     portrait: P([-1.0, 1.75, 5.6], [-3.4, 1.5, 0.6], 27),
   },
   ai: {
-    landscape: L([0, 1.7, 8.8], [0, 1.35, -3.0], 38),
+    landscape: L('ai', [0, 1.7, 8.8], [0, 1.35, -3.0], 38),
     portrait: P([0, 1.9, 7.4], [0, 1.3, -3], 24),
   },
   web: {
-    landscape: L([0.2, 2.75, 4.4], [0.3, 2.9, -6.0], 42),
+    landscape: L('web', [0.2, 2.75, 4.4], [0.3, 2.9, -6.0], 42),
     portrait: P([0.4, 2.6, 4.2], [0, 2.9, -6.0], 26, 0.2),
   },
   education: {
-    landscape: L([0.8, 2.3, 7.6], [-1.8, 1.5, 3.0], 38),
+    landscape: L('education', [0.8, 2.3, 7.6], [-1.8, 1.5, 3.0], 38),
     portrait: P([0.6, 2.3, 7.4], [-1.4, 1.5, 3.2], 27),
   },
   contact: {
-    landscape: L([0, 3.2, 10.8], [0, 1.2, -2.5], 42),
+    landscape: L('contact', [0, 3.2, 10.8], [0, 1.2, -2.5], 42),
     portrait: P([0, 3.0, 9.4], [0, 1.2, -3], 25, 0.14),
   },
 }
