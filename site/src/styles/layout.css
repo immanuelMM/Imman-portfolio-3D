@@ -25,6 +25,11 @@
     font-weight: 600;
     font-size: 1.05rem;
     text-decoration: none;
+    white-space: nowrap;
+  }
+
+  .site-header .btn {
+    white-space: nowrap;
   }
 
   .brand__mark {
@@ -104,17 +109,29 @@
       border: 0;
     }
 
+    /* 1024-1279: brand, six links and the CV button share one line, so everything is a little tighter. */
+    .site-header {
+      gap: var(--sp-2);
+      padding-inline: var(--sp-5);
+    }
+
+    .brand {
+      gap: var(--sp-2);
+      font-size: 0.98rem;
+    }
+
     .site-nav ul {
       display: flex;
-      gap: var(--sp-1);
+      gap: 0;
     }
 
     .site-nav a {
       min-height: 40px;
-      padding: 0 var(--sp-3);
+      padding: 0 var(--sp-2);
       border-color: transparent;
       background: none;
-      font-size: 0.92rem;
+      font-size: 0.86rem;
+      white-space: nowrap;
     }
 
     .site-nav a:hover {
@@ -125,6 +142,27 @@
       border-color: transparent;
       box-shadow: inset 0 -2px 0 var(--cyan);
       border-radius: 0;
+    }
+  }
+
+  @media (min-width: 1280px) and (orientation: landscape) {
+    .site-header {
+      gap: var(--sp-3);
+      padding-inline: var(--gutter);
+    }
+
+    .brand {
+      gap: var(--sp-3);
+      font-size: 1.05rem;
+    }
+
+    .site-nav ul {
+      gap: var(--sp-1);
+    }
+
+    .site-nav a {
+      padding: 0 var(--sp-3);
+      font-size: 0.92rem;
     }
   }
 

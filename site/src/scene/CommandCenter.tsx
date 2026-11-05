@@ -89,7 +89,7 @@ export default function CommandCenter({ motion, tier, paused, onReady, onLost, o
     >
       {motion && tier === 'high' && <PerformanceMonitor onDecline={onDecline} />}
       <color attach="background" args={['#05080c']} />
-      <fogExp2 attach="fog" args={['#09141d', 0.038]} />
+      <fogExp2 attach="fog" args={['#0b1015', 0.036]} />
       <Contents tier={tier} motion={motion} onReady={onReady} />
       {settings.bloom && (
         <Suspense fallback={null}>

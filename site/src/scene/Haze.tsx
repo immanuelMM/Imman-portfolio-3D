@@ -47,7 +47,7 @@ export default function Haze() {
     const geometry = new ConeGeometry(1.7, ROOM.height - 0.05, 32, 1, true)
     geometry.translate(0, -(ROOM.height - 0.05) / 2, 0)
     const material = new ShaderMaterial({
-      uniforms: { uColour: { value: new Color(0.35, 0.62, 0.8) }, uStrength: { value: 0.075 } },
+      uniforms: { uColour: { value: new Color(0.52, 0.63, 0.74) }, uStrength: { value: 0.075 } },
       vertexShader: vertex,
       fragmentShader: fragment,
       transparent: true,

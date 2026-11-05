@@ -60,9 +60,9 @@ function Walls({ tier }: { tier: QualityTier }) {
   const back = useMaterialMaps('wall', tier, BACK_REPEAT)
   const side = useMaterialMaps('wall', tier, SIDE_REPEAT)
   const common = {
-    color: '#36404a',
-    roughness: 0.6,
-    metalness: 0.7,
+    color: '#4a555f',
+    roughness: 0.66,
+    metalness: 0.35,
     envMapIntensity: 0.9,
   } as const
   return (
@@ -99,7 +99,7 @@ function Walls({ tier }: { tier: QualityTier }) {
       </mesh>
       <mesh position={[0, ROOM.height, CENTRE_Z]} rotation={[Math.PI / 2, 0, 0]}>
         <planeGeometry args={[ROOM.halfWidth * 2, LENGTH]} />
-        <meshStandardMaterial color="#10161d" roughness={0.9} metalness={0.3} />
+        <meshStandardMaterial color="#222a32" roughness={0.85} metalness={0.2} />
       </mesh>
     </group>
   )
@@ -138,15 +138,20 @@ function CeilingGear({ tier }: { tier: QualityTier }) {
         m.compose(new Vector3(x, ROOM.height - 0.62, CENTRE_Z + 1.0), q, new Vector3(0.035, 0.07, LENGTH - 2)),
       )
     })
-    const lightMat = new MeshBasicMaterial({ color: new Color(2.4, 3.0, 3.6), toneMapped: false })
+    const lightMat = new MeshBasicMaterial({ color: new Color(1.0, 1.2, 1.4), toneMapped: false })
     const strips = new InstancedMesh(box, lightMat, 4)
-    ;[-1.35, 1.35].forEach((x, i) => {
-      strips.setMatrixAt(i, m.compose(new Vector3(x, ROOM.height - 0.04, -1.5), q, new Vector3(0.22, 0.04, 6.5)))
-    })
-    ;[-3, 3].forEach((z, i) => {
-      strips.setMatrixAt(2 + i, m.compose(new Vector3(0, ROOM.height - 0.04, z), q, new Vector3(2.2, 0.04, 0.22)))
-    })
-    for (const mesh of [beams, rungs, rails, strips]) {
+    // each strip sits in a dark steel housing a little larger than the lit diffuser
+    const housings = new InstancedMesh(box, undefined, 4)
+    const strip = (i: number, x: number, z: number, w: number, d: number) => {
+      strips.setMatrixAt(i, m.compose(new Vector3(x, ROOM.height - 0.075, z), q, new Vector3(w, 0.02, d)))
+      housings.setMatrixAt(
+        i,
+        m.compose(new Vector3(x, ROOM.height - 0.05, z), q, new Vector3(w + 0.14, 0.06, d + 0.14)),
+      )
+    }
+    ;[-1.35, 1.35].forEach((x, i) => strip(i, x, -1.5, 0.22, 6.5))
+    ;[-3, 3].forEach((z, i) => strip(2 + i, 0, z, 2.2, 0.22))
+    for (const mesh of [beams, rungs, rails, strips, housings]) {
       mesh.instanceMatrix.needsUpdate = true
       mesh.frustumCulled = false
     }
@@ -156,10 +161,11 @@ function CeilingGear({ tier }: { tier: QualityTier }) {
       rungs,
       rails,
       strips,
+      housings,
       dispose: () => {
         box.dispose()
         lightMat.dispose()
-        for (const mesh of [beams, rungs, rails, strips]) mesh.dispose()
+        for (const mesh of [beams, rungs, rails, strips, housings]) mesh.dispose()
       },
     }
   }, [])
@@ -179,6 +185,7 @@ function CeilingGear({ tier }: { tier: QualityTier }) {
       <primitive object={parts.beams}>{steel}</primitive>
       <primitive object={parts.rungs}>{steel}</primitive>
       <primitive object={parts.rails}>{steel}</primitive>
+      <primitive object={parts.housings}>{steel}</primitive>
       <primitive object={parts.strips} />
     </group>
   )

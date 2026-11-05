@@ -55,7 +55,7 @@ export const CHAPTER_POSES: Record<ChapterId, Record<PoseKind, ScenePose>> = {
     portrait: P([0, 2.0, 7.6], [0, 1.3, -3], 24),
   },
   experience: {
-    landscape: L('experience', [-1.4, 1.75, 6.6], [-4.0, 1.5, 1.2], 42),
+    landscape: L('experience', [1.2, 1.7, 2.2], [-4.15, 1.55, 1.0], 40),
     portrait: P([-1.0, 1.75, 5.6], [-3.4, 1.5, 0.6], 27),
   },
   ai: {
@@ -63,7 +63,7 @@ export const CHAPTER_POSES: Record<ChapterId, Record<PoseKind, ScenePose>> = {
     portrait: P([0, 1.9, 7.4], [0, 1.3, -3], 24),
   },
   web: {
-    landscape: L('web', [0.2, 2.75, 4.4], [0.3, 2.9, -6.0], 42),
+    landscape: L('web', [0.4, 2.5, 6.3], [0, 2.25, -6.0], 38),
     portrait: P([0.4, 2.6, 4.2], [0, 2.9, -6.0], 26, 0.2),
   },
   education: {

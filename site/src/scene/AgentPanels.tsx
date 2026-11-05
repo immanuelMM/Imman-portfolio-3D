@@ -140,7 +140,7 @@ export default function AgentPanels({ tier, motion, chapter }: Props) {
     const spillGeo = new CircleGeometry(1.7, 40)
     spillGeo.rotateX(-Math.PI / 2)
     const spillMat = new ShaderMaterial({
-      uniforms: { uColour: { value: new Color(0.1, 0.62, 0.8) } },
+      uniforms: { uColour: { value: new Color(0.06, 0.36, 0.48) } },
       vertexShader: spillVertex,
       fragmentShader: spillFragment,
       transparent: true,
