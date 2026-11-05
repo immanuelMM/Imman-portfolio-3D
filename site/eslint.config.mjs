@@ -31,7 +31,7 @@ export default tseslint.config(
   },
   {
     // Node scripts and tests
-    files: ['scripts/**/*.mjs', '*.config.{mjs,ts}', 'src/**/*.test.ts'],
+    files: ['scripts/**/*.mjs', '*.config.{mjs,ts}', 'src/**/*.test.ts', 'e2e/**/*.mjs'],
     languageOptions: { globals: { ...globals.node, ...globals.browser } }, // browser: page.evaluate bodies in the capture scripts
     rules: { 'no-console': 'off' },
   },

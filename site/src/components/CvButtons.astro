@@ -1,0 +1,47 @@
+---
+interface Props {
+  /** nav: dropdown in the top bar (>= 640). bar: sticky bottom bar on phones. block: the contact section. */
+  variant: 'nav' | 'bar' | 'block'
+}
+const { variant } = Astro.props
+const HELP = "PDF opens your browser's print dialog: choose Save as PDF. Word downloads a .docx file."
+---
+
+{variant === 'nav' && (
+  <details class="cv-menu" data-cv-menu>
+    <summary class="btn btn--small">Download CV</summary>
+    <div class="cv-menu__panel">
+      <button class="btn" type="button" data-cv="pdf">
+        Print / Save as PDF
+      </button>
+      <button class="btn btn--ghost" type="button" data-cv="word">
+        Word (.docx)
+      </button>
+      <p class="note">{HELP}</p>
+    </div>
+  </details>
+)}
+{variant === 'bar' && (
+  <div class="cv-bar" role="group" aria-label="Download CV">
+    <button class="btn" type="button" data-cv="pdf">
+      Print / Save as PDF
+    </button>
+    <button class="btn btn--ghost" type="button" data-cv="word">
+      Word (.docx)
+    </button>
+  </div>
+)}
+{variant === 'block' && (
+  <div class="cv-block" id="download-cv">
+    <h3>Download my CV</h3>
+    <div class="cv-block__buttons">
+      <button class="btn btn--primary" type="button" data-cv="pdf">
+        Print / Save as PDF
+      </button>
+      <button class="btn" type="button" data-cv="word">
+        Word (.docx)
+      </button>
+    </div>
+    <p class="note">{HELP}</p>
+  </div>
+)}

@@ -1,0 +1,187 @@
+/*
+ * Print -> CV. NOT in a cascade layer: print rules use !important and must beat every layer.
+ * The page never prints; #cv-print (rendered at build time by components/cv/CvDocument.astro) is the printed CV.
+ * Ported from AI_Porfolio style.css section 13.
+ */
+.cv-print {
+  display: none;
+}
+
+@media print {
+  @page {
+    size: A4;
+    margin: 14mm 16mm;
+  }
+
+  html,
+  body {
+    background: #fff !important;
+    color: #111 !important;
+    padding: 0 !important;
+    font-size: 10pt;
+  }
+
+  body > *:not(#cv-print) {
+    display: none !important;
+  }
+
+  #cv-print {
+    display: block !important;
+  }
+}
+
+.cv {
+  font-family: 'Inter Variable', 'Inter Fallback', Arial, Helvetica, sans-serif;
+  font-size: 10pt;
+  line-height: 1.45;
+  color: #1a1a1a;
+  -webkit-print-color-adjust: exact;
+  print-color-adjust: exact;
+}
+
+:where(.cv) p {
+  max-width: none;
+  margin: 0;
+}
+
+.cv a {
+  color: #1d4ed8;
+  text-decoration: none;
+  overflow-wrap: anywhere;
+}
+
+.cv-head {
+  text-align: center;
+  padding-bottom: 8pt;
+}
+
+.cv-name {
+  font-family: inherit;
+  font-size: 21pt;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  color: #111;
+  line-height: 1.15;
+}
+
+.cv-role {
+  font-size: 11.5pt;
+  color: #444;
+  margin-top: 2pt;
+}
+
+.cv-contact {
+  font-size: 9pt;
+  color: #333;
+  margin-top: 4pt;
+}
+
+.cv-sep {
+  color: #999;
+  margin: 0 6pt;
+}
+
+.cv-section {
+  margin-top: 12pt;
+}
+
+.cv-h2 {
+  font-family: inherit;
+  font-size: 10.5pt;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #111;
+  padding-bottom: 2pt;
+  margin: 0 0 6pt;
+  border-bottom: 0.75pt solid #9a9a9a;
+  break-after: avoid;
+  page-break-after: avoid;
+}
+
+.cv-h3 {
+  font-family: inherit;
+  font-size: 8.5pt;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #666;
+  margin: 9pt 0 2pt;
+  break-after: avoid;
+  page-break-after: avoid;
+}
+
+.cv-entry {
+  margin-bottom: 8pt;
+  break-inside: avoid;
+  page-break-inside: avoid;
+}
+
+.cv-entry:last-child {
+  margin-bottom: 0;
+}
+
+.cv-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 12pt;
+}
+
+.cv-title {
+  font-weight: 600;
+  font-size: 10.5pt;
+  color: #111;
+}
+
+.cv-date {
+  flex-shrink: 0;
+  font-size: 9pt;
+  color: #555;
+  white-space: nowrap;
+}
+
+.cv-org {
+  font-style: italic;
+  color: #444;
+  font-size: 9.5pt;
+}
+
+.cv-p {
+  margin-top: 2pt;
+  color: #222;
+}
+
+.cv .cv-ul {
+  margin: 3pt 0 0 14pt;
+  padding: 0;
+  list-style: disc;
+}
+
+.cv-ul li {
+  margin-bottom: 1.5pt;
+  padding-left: 2pt;
+  color: #222;
+}
+
+.cv-meta {
+  font-size: 9pt;
+  color: #444;
+  margin-top: 2pt;
+}
+
+.cv-meta b {
+  color: #222;
+  font-weight: 600;
+}
+
+.cv-skills {
+  display: flex;
+  flex-direction: column;
+  gap: 2.5pt;
+}
+
+.cv-skill b {
+  font-weight: 600;
+  color: #111;
+}

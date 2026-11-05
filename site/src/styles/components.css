@@ -368,4 +368,124 @@
   .contact__row--static {
     max-width: none;
   }
+
+  /* ── Download CV ────────────────────────────────────────────── */
+  /* Top-bar dropdown (>= 640). Below that the sticky bottom bar carries the same buttons. */
+  .cv-menu {
+    display: none;
+    position: relative;
+  }
+
+  .cv-menu > summary {
+    list-style: none;
+    background: var(--cyan);
+    color: var(--on-cyan);
+  }
+
+  .cv-menu > summary::-webkit-details-marker {
+    display: none;
+  }
+
+  .cv-menu__panel {
+    position: absolute;
+    right: 0;
+    top: calc(100% + var(--sp-2));
+    z-index: 40;
+    display: grid;
+    gap: var(--sp-3);
+    width: min(320px, 90vw);
+    padding: var(--sp-4);
+    border: 1px solid var(--line);
+    border-radius: var(--r-lg);
+    background: var(--surface);
+    box-shadow: 0 12px 40px rgb(0 0 0 / 0.5);
+  }
+
+  .cv-bar {
+    position: fixed;
+    inset: auto 0 0 0;
+    z-index: 30;
+    display: flex;
+    gap: var(--sp-3);
+    padding: var(--sp-3) var(--gutter) calc(var(--sp-3) + var(--safe-bottom));
+    background: color-mix(in srgb, var(--bg) 92%, transparent);
+    backdrop-filter: blur(14px);
+    border-top: 1px solid var(--line);
+  }
+
+  .cv-bar .btn {
+    flex: 1 1 0;
+    min-width: 0;
+    padding: 0 var(--sp-3);
+    font-size: 0.92rem;
+    text-align: center;
+  }
+
+  .cv-bar .btn:first-child {
+    background: var(--cyan);
+    color: var(--on-cyan);
+  }
+
+  body[data-in-contact='true'] .cv-bar {
+    display: none;
+  }
+
+  .cv-block {
+    display: grid;
+    gap: var(--sp-3);
+    padding: var(--sp-4);
+    border: 1px solid color-mix(in srgb, var(--cyan) 45%, var(--line));
+    border-radius: var(--r-lg);
+    background: var(--surface-2);
+  }
+
+  .cv-block__buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--sp-3);
+  }
+
+  .cv-block__buttons .btn {
+    flex: 1 1 200px;
+  }
+
+  .btn[disabled] {
+    opacity: 0.6;
+    cursor: progress;
+  }
+
+  .cv-toast {
+    position: fixed;
+    left: 50%;
+    bottom: calc(var(--cvbar-h) + var(--safe-bottom) + var(--sp-3));
+    z-index: 50;
+    translate: -50% 0;
+    max-width: min(90vw, 420px);
+    margin: 0;
+    padding: var(--sp-3) var(--sp-4);
+    border: 1px solid var(--cyan);
+    border-radius: var(--r-md);
+    background: var(--surface);
+    color: var(--text);
+    font-size: 0.95rem;
+    text-align: center;
+  }
+
+  .cv-toast:empty {
+    display: none;
+  }
+
+  @media (min-width: 640px) {
+    .cv-menu {
+      display: block;
+    }
+
+    .cv-bar {
+      display: none;
+    }
+
+    .cv-toast {
+      bottom: var(--sp-5);
+    }
+  }
 }

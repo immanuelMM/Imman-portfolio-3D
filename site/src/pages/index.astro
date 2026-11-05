@@ -3,6 +3,8 @@ import AgentStrip from '../components/AgentStrip.astro'
 import CertCard from '../components/CertCard.astro'
 import ChapterSection from '../components/ChapterSection.astro'
 import ContactBlock from '../components/ContactBlock.astro'
+import CvButtons from '../components/CvButtons.astro'
+import CvDocument from '../components/cv/CvDocument.astro'
 import Footer from '../components/Footer.astro'
 import Hero from '../components/Hero.astro'
 import ProjectCard from '../components/ProjectCard.astro'
@@ -64,7 +66,9 @@ const { profile, experience, education, aiTools, webSystems, staticProjects, cer
 
   <ChapterSection id="contact" eyebrow="Say hello" title="Contact">
     <ContactBlock />
+    <CvButtons variant="block" />
   </ChapterSection>
 
   <Footer slot="footer" />
+  <CvDocument slot="print" />
 </Base>

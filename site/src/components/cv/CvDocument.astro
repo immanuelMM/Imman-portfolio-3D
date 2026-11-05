@@ -1,0 +1,172 @@
+---
+import { siteData, publicSiteUrl } from '../../data'
+import { buildCvModel, cvShortUrl, type CvEntry, type CvLink, type CvProject } from '../../lib/cv/model'
+import { safeJsonLd } from '../../lib/seo'
+
+// Rendered at build time from the same model the Word export uses. Hidden on screen; `print.css` shows only this
+// container under @media print, so Ctrl+P anywhere on the site prints the CV.
+const siteUrl = publicSiteUrl(Astro.site, import.meta.env.BASE_URL, import.meta.env.DEV)
+const m = buildCvModel(siteData, siteUrl)
+
+const entries = (items: CvEntry[]) => items
+const meta = (p: CvProject) => [
+  ...(p.tech.length ? [{ label: 'Tech', text: p.tech.join(', ') }] : []),
+  ...p.links.map((l: CvLink) => ({ label: l.label ?? '', text: l.text, href: l.href })),
+]
+---
+
+<div id="cv-print" class="cv-print" aria-hidden="true">
+  <article class="cv">
+    <header class="cv-head">
+      <p class="cv-name">{m.name}</p>
+      {m.title && <p class="cv-role">{m.title}</p>}
+      {m.contact.length > 0 && (
+        <p class="cv-contact">
+          {m.contact.map((c, i) => (
+            <>
+              {i > 0 && <span class="cv-sep">|</span>}
+              {c.href ? <a href={c.href}>{c.text}</a> : c.text}
+            </>
+          ))}
+        </p>
+      )}
+      {m.links.length > 0 && (
+        <p class="cv-contact">
+          {m.links.map((l, i) => (
+            <>
+              {i > 0 && <span class="cv-sep">|</span>}
+              {l.label}: <a href={l.href}>{l.text}</a>
+            </>
+          ))}
+        </p>
+      )}
+    </header>
+
+    {m.summary && (
+      <section class="cv-section">
+        <h2 class="cv-h2">Professional Summary</h2>
+        <p class="cv-p">{m.summary}</p>
+      </section>
+    )}
+
+    {m.skills.length > 0 && (
+      <section class="cv-section">
+        <h2 class="cv-h2">Skills</h2>
+        <div class="cv-skills">
+          {m.skills.map((s) => (
+            <div class="cv-skill">
+              <b>{s.label}:</b> {s.items.join(', ')}
+            </div>
+          ))}
+        </div>
+      </section>
+    )}
+
+    {m.experience.length > 0 && (
+      <section class="cv-section">
+        <h2 class="cv-h2">Work Experience</h2>
+        {entries(m.experience).map((e) => (
+          <div class="cv-entry">
+            <div class="cv-row">
+              <span class="cv-title">{e.title}</span>
+              <span class="cv-date">{e.period}</span>
+            </div>
+            {e.org && <div class="cv-org">{e.org}</div>}
+            {e.bullets.length > 0 && (
+              <ul class="cv-ul">
+                {e.bullets.map((b) => (
+                  <li>{b}</li>
+                ))}
+              </ul>
+            )}
+          </div>
+        ))}
+      </section>
+    )}
+
+    {m.projectGroups.length > 0 && (
+      <section class="cv-section">
+        <h2 class="cv-h2">Projects</h2>
+        {m.projectGroups.map((g) => (
+          <>
+            <h3 class="cv-h3">{g.label}</h3>
+            {g.items.map((p) => (
+              <div class="cv-entry">
+                <div class="cv-title">{p.title}</div>
+                {p.desc && <p class="cv-p">{p.desc}</p>}
+                {p.bullets.length > 0 && (
+                  <ul class="cv-ul">
+                    {p.bullets.map((b) => (
+                      <li>{b}</li>
+                    ))}
+                  </ul>
+                )}
+                {meta(p).length > 0 && (
+                  <div class="cv-meta">
+                    {meta(p).map((x, i) => (
+                      <>
+                        {i > 0 && <span class="cv-sep">|</span>}
+                        <b>{x.label}:</b> {'href' in x && x.href ? <a href={x.href}>{x.text}</a> : x.text}
+                      </>
+                    ))}
+                  </div>
+                )}
+              </div>
+            ))}
+          </>
+        ))}
+      </section>
+    )}
+
+    {m.education.length > 0 && (
+      <section class="cv-section">
+        <h2 class="cv-h2">Education</h2>
+        {m.education.map((e) => (
+          <div class="cv-entry">
+            <div class="cv-row">
+              <span class="cv-title">{e.title}</span>
+              <span class="cv-date">{e.period}</span>
+            </div>
+            {e.org && <div class="cv-org">{e.org}</div>}
+          </div>
+        ))}
+      </section>
+    )}
+
+    {m.certifications.length > 0 && (
+      <section class="cv-section">
+        <h2 class="cv-h2">Certifications</h2>
+        {m.certifications.map((c) => (
+          <div class="cv-entry">
+            <div class="cv-row">
+              <span class="cv-title">{c.name}</span>
+              <span class="cv-date">{c.year}</span>
+            </div>
+            <div class="cv-org">{c.issuer}</div>
+            {c.link && (
+              <div class="cv-meta">
+                <b>Credential:</b> <a href={c.link}>{cvShortUrl(c.link)}</a>
+              </div>
+            )}
+          </div>
+        ))}
+      </section>
+    )}
+
+    {m.languages.length > 0 && (
+      <section class="cv-section">
+        <h2 class="cv-h2">Languages</h2>
+        <p class="cv-p">
+          {m.languages.map((l, i) => (
+            <>
+              {i > 0 && <span class="cv-sep">|</span>}
+              {l.name}
+              {l.level ? ` (${l.level})` : ''}
+            </>
+          ))}
+        </p>
+      </section>
+    )}
+  </article>
+  <script type="application/json" id="cv-model" set:html={safeJsonLd(m)} />
+</div>

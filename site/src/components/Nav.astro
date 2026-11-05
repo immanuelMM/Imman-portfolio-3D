@@ -1,6 +1,7 @@
 ---
 import { withBase } from '../lib/withBase'
 import { CHAPTER_IDS } from '../scene/chapters'
+import CvButtons from './CvButtons.astro'
 
 interface Props {
   name: string
@@ -31,6 +32,7 @@ const labels: Record<(typeof CHAPTER_IDS)[number], string> = {
       ))}
     </ul>
   </nav>
+  <CvButtons variant="nav" />
   <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="primary-nav" data-nav-toggle>
     <span class="sr-only">Menu</span>
     <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">

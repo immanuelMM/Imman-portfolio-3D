@@ -1,8 +1,10 @@
 ---
 import '../styles/layers.css'
+import '../styles/print.css'
 import interUrl from '@fontsource-variable/inter/files/inter-latin-wght-normal.woff2?url'
 import groteskUrl from '@fontsource-variable/space-grotesk/files/space-grotesk-latin-wght-normal.woff2?url'
 import monoUrl from '@fontsource-variable/jetbrains-mono/files/jetbrains-mono-latin-wght-normal.woff2?url'
+import CvButtons from '../components/CvButtons.astro'
 import Nav from '../components/Nav.astro'
 import ScenePoster from '../components/ScenePoster.astro'
 import { profile } from '../data/profile'
@@ -75,11 +77,14 @@ const seo = buildSeo({
       <slot />
     </main>
     <slot name="footer" />
+    <CvButtons variant="bar" />
+    <p id="cv-toast" class="cv-toast" role="status" aria-live="polite"></p>
     <slot name="print" />
     <script>
       import '../scripts/sceneBoot'
       import '../scripts/activeSection'
       import '../scripts/navMenu'
+      import '../scripts/cvDownload'
     </script>
   </body>
 </html>

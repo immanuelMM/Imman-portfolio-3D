@@ -13,6 +13,7 @@
     "check": "astro check",
     "lint": "eslint .",
     "test": "vitest run --maxWorkers=2 --testTimeout=30000",
+    "e2e:cv": "node e2e/cv.spec.mjs",
     "format": "prettier --write .",
     "format:check": "prettier --check ."
   },
