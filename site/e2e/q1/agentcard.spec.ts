@@ -43,12 +43,19 @@ test('keyboard: Enter opens, focus moves in, page behind is inert, Escape closes
   await expect(s.page.locator(`#${labelledBy}`)).toHaveText('QA')
   expect(await insideDialog()).toBe(true)
   expect(await s.page.locator('main').evaluate((el: HTMLElement) => el.inert)).toBe(true)
-  // the dialog fits the viewport (bottom sheet on phones, card on desktop)
-  const box = (await dialog().locator('[data-agent-card]:not([hidden])').boundingBox())!
+  // every control of the card is fully inside the viewport (bottom sheet on phones, card on desktop)
   const vp = s.page.viewportSize()!
-  expect(box.x).toBeGreaterThanOrEqual(-1)
-  expect(box.x + box.width).toBeLessThanOrEqual(vp.width + 1)
-  expect(box.y + box.height).toBeLessThanOrEqual(vp.height + 1)
+  const outside = await dialog()
+    .locator('[data-agent-card]:not([hidden]) :is(button, a), .agent-dialog__close')
+    .evaluateAll((els, v) =>
+      els
+        .filter((e) => (e as HTMLElement).getClientRects().length)
+        .map((e) => ({ t: (e.textContent ?? '').trim().slice(0, 20) || e.className, r: e.getBoundingClientRect() }))
+        .filter(({ r }) => r.left < -1 || r.top < -1 || r.right > v.w + 1 || r.bottom > v.h + 1)
+        .map(({ t, r }) => `${t}: ${Math.round(r.left)},${Math.round(r.top)}..${Math.round(r.right)},${Math.round(r.bottom)}`),
+      { w: vp.width, h: vp.height },
+    )
+  expect(outside, 'card controls outside the viewport').toEqual([])
   for (let i = 0; i < 6; i++) {
     await s.page.keyboard.press('Tab')
     expect(await insideDialog(), `Tab ${i + 1} stays inside`).toBe(true)

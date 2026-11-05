@@ -35,4 +35,10 @@ export default tseslint.config(
     languageOptions: { globals: { ...globals.node, ...globals.browser } }, // browser: page.evaluate bodies in the capture scripts
     rules: { 'no-console': 'off' },
   },
+  {
+    // Playwright specs: `async ({}, testInfo)` is the documented way to reach testInfo without a fixture.
+    files: ['e2e/q1/**/*.ts'],
+    languageOptions: { globals: { ...globals.node, ...globals.browser } },
+    rules: { 'no-empty-pattern': 'off', 'no-console': 'off' },
+  },
 )

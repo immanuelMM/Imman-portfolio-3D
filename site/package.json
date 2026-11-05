@@ -20,7 +20,10 @@
     "budget": "node scripts/check-budget.mjs",
     "poster": "node scripts/capture-poster.mjs",
     "format": "prettier --write .",
-    "format:check": "prettier --check ."
+    "format:check": "prettier --check .",
+    "e2e:q1": "node e2e/q1/run-projects.mjs",
+    "e2e:q1:links": "node e2e/q1/links-report.mjs",
+    "e2e:q1:lighthouse": "node e2e/q1/lighthouse.mjs"
   },
   "dependencies": {
     "@astrojs/sitemap": "^3.7.4",

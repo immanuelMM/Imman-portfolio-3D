@@ -18,6 +18,8 @@ export type Session = {
   page: Page
   errors: string[]
   failed: string[]
+  /** Requests the page itself cancelled (e.g. a lazy model fetch dropped when its chapter unmounts during a fast scroll). */
+  aborted: string[]
   requests: string[]
 }
 
@@ -36,13 +38,36 @@ export async function openSession(browser: Browser, info: TestInfo, query = ''):
     acceptDownloads: true,
   })
   const page = await ctx.newPage()
-  const s: Session = { ctx, page, errors: [], failed: [], requests: [] }
+  if (meta(info).mode !== 'no-webgl') {
+    // `?tier=` pins the tier, but the nav links' hrefs (`/immanuel-3d/#web`) have no query, so a click would be a full page
+    // load that drops the pin and re-boots the 40 s scene. Turn same-page anchor clicks into a plain hash change (QA only).
+    await page.addInitScript(() => {
+      document.addEventListener(
+        'click',
+        (e) => {
+          const a = (e.target as Element | null)?.closest?.('a[href*="#"]') as HTMLAnchorElement | null
+          if (!a || a.target) return
+          const u = new URL(a.href)
+          if (u.origin === location.origin && u.pathname === location.pathname && u.hash.length > 1) {
+            e.preventDefault()
+            location.hash = u.hash
+          }
+        },
+        true,
+      )
+    })
+  }
+  const s: Session = { ctx, page, errors: [], failed: [], aborted: [], requests: [] }
   page.on('console', (m) => {
     if (m.type() === 'error' && !NOISE.test(m.text())) s.errors.push(m.text())
   })
   page.on('pageerror', (e) => s.errors.push(`pageerror: ${e.message}`))
   page.on('request', (r) => s.requests.push(r.url()))
-  page.on('requestfailed', (r) => s.failed.push(`${r.url()} ${r.failure()?.errorText}`))
+  page.on('requestfailed', (r) => {
+    const text = r.failure()?.errorText ?? ''
+    if (text === 'net::ERR_ABORTED') s.aborted.push(r.url())
+    else s.failed.push(`${r.url()} ${text}`)
+  })
   page.on('response', (r) => {
     if (r.status() >= 400) s.failed.push(`${r.status()} ${r.url()}`)
   })
@@ -94,6 +119,9 @@ export async function closeNavIfOpen(page: Page) {
   if ((await toggle.isVisible()) && (await toggle.getAttribute('aria-expanded')) === 'true') await toggle.click()
 }
 
-/** Hide page content so only the 3D layer is in a screenshot (the scene is fixed behind everything). */
+/**
+ * Hide page content so only the 3D layer is in a screenshot (the scene is fixed behind everything). `opacity: 0` rather than
+ * `visibility: hidden`: descendants of the chapter cards set their own visibility and still painted on phones.
+ */
 export const SCENE_ONLY_CSS =
-  'main, header.site-header, footer, .cv-bar, #cv-toast, .skip-link, dialog, [role="dialog"] { visibility: hidden !important }'
+  'main, header.site-header, footer, .cv-bar, #cv-toast, .skip-link, #agent-dialog, [role="dialog"], .scene-poster { opacity: 0 !important; transition: none !important }'

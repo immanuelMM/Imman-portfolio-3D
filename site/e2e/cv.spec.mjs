@@ -1,5 +1,5 @@
 // Download CV check against a running preview (npm run build && npm run preview):
-//   node e2e/cv.spec.mjs [--webgl] [--url=http://localhost:4361/immanuel-3d/] [--out=<dir for screenshots and the pdf>]
+//   node e2e/cv.spec.mjs [--webgl] [--reduced] [--url=http://localhost:4361/immanuel-3d/] [--out=<dir for screenshots and the pdf>]
 // Plain Playwright + node:assert (no test-runner dependency); Q1 can lift these checks into its projects.
 import assert from 'node:assert/strict'
 import { mkdir, readFile } from 'node:fs/promises'
@@ -10,6 +10,7 @@ const arg = (name, fallback) => process.argv.find((a) => a.startsWith(`--${name}
 const url = arg('url', 'http://localhost:4361/immanuel-3d/')
 const out = arg('out', '')
 const webgl = process.argv.includes('--webgl')
+const reduced = process.argv.includes('--reduced') // reduced motion (needs --webgl to reach the `still` scene)
 const args = webgl
   ? ['--enable-unsafe-swiftshader', '--use-angle=swiftshader', '--ignore-gpu-blocklist']
   : ['--disable-webgl', '--disable-3d-apis']
@@ -21,7 +22,13 @@ const ok = (msg) => console.log(`ok ${++step} - ${msg}`)
 if (out) await mkdir(out, { recursive: true })
 
 async function openPage(viewport, touch = false) {
-  const ctx = await browser.newContext({ viewport, acceptDownloads: true, hasTouch: touch, isMobile: touch })
+  const ctx = await browser.newContext({
+    viewport,
+    acceptDownloads: true,
+    hasTouch: touch,
+    isMobile: touch,
+    reducedMotion: reduced ? 'reduce' : 'no-preference',
+  })
   await ctx.addInitScript(() => {
     window.__printCalls = []
     window.print = () => window.__printCalls.push(document.title)

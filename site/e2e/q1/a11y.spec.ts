@@ -2,8 +2,16 @@
 // entries, the open nav menu / CV menu. Moderate/minor counts are attached to the report for the record.
 // Allowlist: each entry names the axe rule and the milestone that fixes it (none needed at Q1).
 import AxeBuilder from '@axe-core/playwright'
-import { expect, test } from '@playwright/test'
-import { closeNavIfOpen, instantScroll, openNavIfCollapsed, openSession, waitSceneState, type Session } from './support'
+import { expect, test, type TestInfo } from '@playwright/test'
+import {
+  closeNavIfOpen,
+  instantScroll,
+  meta,
+  openNavIfCollapsed,
+  openSession,
+  waitSceneState,
+  type Session,
+} from './support'
 
 test.describe.configure({ mode: 'serial' })
 
@@ -19,7 +27,7 @@ test.afterAll(async () => {
   await s?.ctx.close()
 })
 
-async function scan(label: string, info: import('@playwright/test').TestInfo) {
+async function scan(label: string, info: TestInfo) {
   const results = await new AxeBuilder({ page: s.page })
     .withTags(AXE_TAGS)
     .disableRules(ALLOW.map((a) => a.rule))
@@ -81,7 +89,7 @@ test('agent dialog open', async ({}, info) => {
   await expect(s.page.locator('#agent-dialog')).toBeHidden()
 })
 
-test('nav menu and CV menu open', async ({}, info) => {
+test('nav menu and CV menu open (pointer away)', async ({}, info) => {
   await instantScroll(s.page, 0)
   await openNavIfCollapsed(s.page)
   await scan('nav open', info)
@@ -90,9 +98,26 @@ test('nav menu and CV menu open', async ({}, info) => {
   if (await summary.isVisible()) {
     await summary.click()
     await expect(s.page.locator('.cv-menu')).toHaveAttribute('open', '')
+    await s.page.mouse.move(5, 400) // off the button: only the resting style is measured
+    await s.page.waitForTimeout(500) // the 160 ms hover transition must have finished, or axe samples a mid-fade colour
     await scan('cv menu open', info)
     await summary.click()
+    await s.page.mouse.move(5, 400)
   }
+})
+
+test('CV button keeps readable text while hovered', async ({}, info) => {
+  test.skip(meta(info).touch, 'hover state needs a fine pointer')
+  test.fail(
+    true,
+    'BUG Q1-2: .cv-menu > summary on :hover gets the dark glass .btn background (#13282f) but keeps the cyan-button text colour (#031318), contrast 1.23:1 (color-contrast, serious). Fix in glass.css/components.css (frontend agent), then remove this line.',
+  )
+  await instantScroll(s.page, 0)
+  const summary = s.page.locator('.cv-menu > summary')
+  if (!(await summary.isVisible())) return
+  await summary.hover()
+  await s.page.waitForTimeout(400) // hover transition
+  await scan('cv button hovered', info)
 })
 
 test('no console errors', async () => {

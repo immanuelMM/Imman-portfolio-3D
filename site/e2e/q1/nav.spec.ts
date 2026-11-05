@@ -54,7 +54,11 @@ test('scroll sweep: the active nav item equals data-chapter at every sampled pos
   expect(mismatches).toEqual([])
 })
 
-test('section tops and the page end', async () => {
+test('jumping straight to a section (End/Home, instant anchor, scrollbar drag) updates data-chapter', async () => {
+  test.fail(
+    true,
+    'BUG Q1-3: readAnchors() (lib/chapterAnchors.ts) uses querySelectorAll("[data-chapter]"), which also matches #scene itself (it carries data-chapter, written by activeSection.ts). That fake anchor sits at scrollY - H/2 and is "current chapter", so any jump of more than H/2 px leaves data-chapter (and the scene camera) on the old chapter. Use "section[data-chapter]". Remove this line once fixed.',
+  )
   const { page } = s
   for (const id of CHAPTERS) {
     const top = await page.locator(`#${id}`).evaluate((el) => el.getBoundingClientRect().top + window.scrollY)

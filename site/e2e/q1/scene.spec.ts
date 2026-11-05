@@ -30,7 +30,7 @@ test.afterAll(async () => {
 /** Screenshot of only the fixed 3D layer (page content, header and bars hidden, poster hidden). */
 async function sceneShot() {
   return s.page.screenshot({
-    style: `${SCENE_ONLY_CSS}; .scene-poster { visibility: hidden !important }`,
+    style: SCENE_ONLY_CSS,
     animations: 'allow',
   })
 }
@@ -170,7 +170,8 @@ test('reduced motion: state still, camera does not move on scroll (reduced-motio
   expect(meanDiff, 'scene pixels identical before and after scrolling').toBeLessThan(0.5)
 })
 
-test('no console errors or failed requests during the whole run', async () => {
+test('no console errors or failed requests during the whole run', async ({}, info) => {
   expect(s.errors).toEqual([])
   expect(s.failed).toEqual([])
+  if (s.aborted.length) info.annotations.push({ type: 'aborted', description: s.aborted.join(', ') })
 })
