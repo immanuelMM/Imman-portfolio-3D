@@ -1,0 +1,14 @@
+services:
+  - type: web
+    name: imman-portfolio-3d
+    runtime: static
+    rootDir: site
+    buildCommand: npm ci && npm run build
+    staticPublishPath: dist
+    envVars:
+      - key: BASE_PATH
+        value: /
+      - key: SITE_URL
+        value: https://imman-portfolio-3d.onrender.com
+      - key: NODE_VERSION
+        value: "24"
