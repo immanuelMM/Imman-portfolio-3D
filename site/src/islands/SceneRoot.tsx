@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { createRoot } from 'react-dom/client'
-import { pickBrowserTier, type QualityTier } from '../lib/quality'
+import { pickBrowserTier, tierOverride, type QualityTier } from '../lib/quality'
 import CommandCenter from '../scene/CommandCenter'
 
 export type SceneState = 'ready' | 'still' | 'lost'
@@ -74,6 +74,7 @@ function SceneApp({ onState }: SceneAppProps) {
   }, [onState])
 
   const handleDecline = useCallback(() => setTier('low'), [])
+  const pinned = tierOverride(window.location.search) !== null
 
   if (lost) return null
   return (
@@ -84,6 +85,7 @@ function SceneApp({ onState }: SceneAppProps) {
       onReady={handleReady}
       onLost={handleLost}
       onDecline={handleDecline}
+      steady={pinned}
     />
   )
 }

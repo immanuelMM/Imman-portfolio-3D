@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { pickTier, TIER_SETTINGS } from './quality'
+import { pickTier, tierOverride, TIER_SETTINGS } from './quality'
 
 describe('pickTier', () => {
   it('uses low for a coarse pointer on a phone width', () => {
@@ -18,6 +18,16 @@ describe('pickTier', () => {
   it('uses high for a fine pointer on desktop, even in a narrow window', () => {
     expect(pickTier({ coarsePointer: false, viewportWidth: 1280 })).toBe('high')
     expect(pickTier({ coarsePointer: false, viewportWidth: 500 })).toBe('high')
+  })
+})
+
+describe('tierOverride', () => {
+  it('reads ?tier= for the three tiers and ignores anything else', () => {
+    expect(tierOverride('?tier=high')).toBe('high')
+    expect(tierOverride('?x=1&tier=touch')).toBe('touch')
+    expect(tierOverride('?tier=low')).toBe('low')
+    expect(tierOverride('?tier=ultra')).toBeNull()
+    expect(tierOverride('')).toBeNull()
   })
 })
 

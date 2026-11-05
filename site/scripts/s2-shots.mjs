@@ -14,11 +14,11 @@ const only = flag('only', '')
 const agent = flag('agent', 'qa')
 const CHAPTERS = ['about', 'experience', 'ai', 'web', 'education', 'contact']
 const sizes = [
-  ['desktop', 1440, 900, false],
-  ['laptop', 1024, 768, false],
-  ['tablet', 820, 1180, true],
-  ['phone', 390, 844, true],
-  ['phone2', 360, 740, true],
+  ['desktop', 1440, 900, false, 'high'],
+  ['laptop', 1024, 768, false, 'high'],
+  ['tablet', 820, 1180, true, 'touch'],
+  ['phone', 390, 844, true, 'low'],
+  ['phone2', 360, 740, true, 'low'],
 ].filter(([name]) => !only || only === name)
 
 await mkdir(outDir, { recursive: true })
@@ -41,7 +41,7 @@ async function settle(page, chapter) {
   await page.waitForTimeout(500)
 }
 
-for (const [name, width, height, touch] of sizes) {
+for (const [name, width, height, touch, tier] of sizes) {
   const ctx = await browser.newContext({
     viewport: { width, height },
     hasTouch: touch,
@@ -55,7 +55,8 @@ for (const [name, width, height, touch] of sizes) {
     if (m.type() === 'error' && !/THREE\.Clock/.test(text)) errors.push(text)
   })
   page.on('pageerror', (e) => errors.push(String(e)))
-  await page.goto(url)
+  // the tier is pinned (?tier=) so the frame-rate monitor cannot step the look down under software WebGL
+  await page.goto(`${url}?tier=${tier}`)
   await page.mouse.move(width / 2, height / 2)
   await page.mouse.wheel(0, 1)
   await page.waitForFunction(

@@ -49,10 +49,22 @@ export function pickTier(env: { coarsePointer: boolean; viewportWidth: number; p
   return 'high'
 }
 
+/**
+ * `?tier=high|touch|low` pins the tier (for QA, budgets and posters): the page keeps that look and never steps down when
+ * the frame rate dips. Anything else is ignored.
+ */
+export function tierOverride(search: string): QualityTier | null {
+  const value = new URLSearchParams(search).get('tier')
+  return value === 'high' || value === 'touch' || value === 'low' ? value : null
+}
+
 export function pickBrowserTier(): QualityTier {
-  return pickTier({
-    coarsePointer: window.matchMedia('(pointer: coarse)').matches,
-    viewportWidth: window.innerWidth,
-    portrait: window.innerHeight >= window.innerWidth,
-  })
+  return (
+    tierOverride(window.location.search) ??
+    pickTier({
+      coarsePointer: window.matchMedia('(pointer: coarse)').matches,
+      viewportWidth: window.innerWidth,
+      portrait: window.innerHeight >= window.innerWidth,
+    })
+  )
 }

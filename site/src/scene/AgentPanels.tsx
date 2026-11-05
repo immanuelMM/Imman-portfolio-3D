@@ -26,7 +26,7 @@ import type { ChapterState } from './chapterProgress'
 import { createHoloMaterial } from './holoMaterial'
 import { AGENT_PANELS, AGENT_PANELS_TALL, ARC, PANEL_FLOOR_GAP } from './layout'
 import { drawAgentPanel, loadPanelFonts, PANEL_CANVAS } from './panelCanvas'
-import { flicker } from './flicker'
+import { flicker, powerOn } from './flicker'
 import { useMaterialMaps } from './roomTextures'
 import { usePanelPicking } from './usePanelPicking'
 import { pulseLevel } from './workflow'
@@ -140,7 +140,7 @@ export default function AgentPanels({ tier, motion, chapter }: Props) {
     const spillGeo = new CircleGeometry(1.7, 40)
     spillGeo.rotateX(-Math.PI / 2)
     const spillMat = new ShaderMaterial({
-      uniforms: { uColour: { value: new Color(0.06, 0.36, 0.48) } },
+      uniforms: { uColour: { value: new Color(0.045, 0.27, 0.37) } },
       vertexShader: spillVertex,
       fragmentShader: spillFragment,
       transparent: true,
@@ -257,8 +257,12 @@ export default function AgentPanels({ tier, motion, chapter }: Props) {
     [invalidate],
   )
 
+  // the load flicker-in starts at the first frame the panels exist, just after the canvas begins to fade in
+  const origin = useRef<number | null>(null)
   useFrame(({ clock }, dt) => {
     const t = motion ? clock.elapsedTime : 1.7
+    if (origin.current === null) origin.current = clock.elapsedTime
+    const sincePower = clock.elapsedTime - origin.current - 0.35
     const chapterId = chapter.current?.chapter
     const g = gain.current
     g.pulse = damp(g.pulse, motion && chapterId === 'ai' ? 1 : 0, dt, 3)
@@ -282,7 +286,7 @@ export default function AgentPanels({ tier, motion, chapter }: Props) {
         (motion ? 0.1 * Math.sin(t * 1.2 + i * 1.7) : 0) +
         g.pulse * 0.75 * pulseLevel(id ?? '', t) +
         levels.current[i] * 1.3
-      mat.uniforms.uFlicker.value = motion ? flicker(t, i) : 1
+      mat.uniforms.uFlicker.value = motion ? flicker(t, i) * powerOn(sincePower, i) : 1
     })
     if (!motion && settling) invalidate()
   })

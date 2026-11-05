@@ -101,6 +101,14 @@ describe('chapter camera poses', () => {
     })
   })
 
+  it('shifts by the same pixels per viewport height on every wide aspect (poster and canvas stay aligned)', () => {
+    for (const id of CHAPTER_IDS) {
+      const pose = CHAPTER_POSES[id].landscape
+      const reference = resolvePose(pose, 1.6).offsetX
+      for (const aspect of [1.2, 1.33, 1.78, 2.2]) expect(resolvePose(pose, aspect).offsetX).toBeCloseTo(reference, 9)
+    }
+  })
+
   it('keeps the portrait poses unshifted horizontally (one stacked column)', () => {
     for (const id of CHAPTER_IDS) expect(CHAPTER_POSES[id].portrait.shiftX).toBe(0)
   })

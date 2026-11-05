@@ -26,6 +26,8 @@ export interface CommandCenterProps {
   onReady: () => void
   onLost: () => void
   onDecline: () => void
+  /** the tier is pinned (`?tier=`): never watch the frame rate */
+  steady?: boolean
 }
 
 /** Signals the first finished frames (the poster stays up until the textures and fonts are in and 4 frames are drawn). */
@@ -65,8 +67,21 @@ function Contents({ tier, motion, onReady }: { tier: QualityTier; motion: boolea
   )
 }
 
-export default function CommandCenter({ motion, tier, paused, onReady, onLost, onDecline }: CommandCenterProps) {
+export default function CommandCenter({
+  motion,
+  tier,
+  paused,
+  onReady,
+  onLost,
+  onDecline,
+  steady = false,
+}: CommandCenterProps) {
   const settings = TIER_SETTINGS[tier]
+  // `#scene[data-tier]` = high | touch | low, for scripts that must know which look they are measuring
+  useEffect(() => {
+    const scene = document.getElementById('scene')
+    if (scene) scene.dataset.tier = tier
+  }, [tier])
   return (
     <Canvas
       dpr={settings.dpr}
@@ -87,7 +102,7 @@ export default function CommandCenter({ motion, tier, paused, onReady, onLost, o
         })
       }}
     >
-      {motion && tier === 'high' && <PerformanceMonitor onDecline={onDecline} />}
+      {motion && tier === 'high' && !steady && <PerformanceMonitor onDecline={onDecline} />}
       <color attach="background" args={['#05080c']} />
       <fogExp2 attach="fog" args={['#0b1015', 0.036]} />
       <Contents tier={tier} motion={motion} onReady={onReady} />

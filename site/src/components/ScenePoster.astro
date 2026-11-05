@@ -1,6 +1,17 @@
 ---
-// The poster is the first picture and the no-WebGL fallback. Until the posters are captured from the real scene (S3)
-// it is a CSS gradient stand-in (features.css). The scene never reads it, so S3 only swaps the CSS.
+/**
+ * The poster is the first picture, the no-WebGL fallback and the picture after a context loss. It is a real render of the
+ * About frame (scripts/capture-poster.mjs: reduced-motion still, a landscape, a tablet-portrait and a phone-portrait crop,
+ * chosen by aspect ratio in features.css). The scene never reads it.
+ */
+import { withBase } from '../lib/withBase'
+
+const landscape = withBase('poster/poster-hero-desktop.webp')
+const tablet = withBase('poster/poster-hero-tablet.webp')
+const phone = withBase('poster/poster-hero-phone.webp')
 ---
 
-<div class="scene-poster"></div>
+<div
+  class="scene-poster"
+  style={`--poster-landscape:url(${landscape});--poster-tablet:url(${tablet});--poster-phone:url(${phone})`}
+></div>

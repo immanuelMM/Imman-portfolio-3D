@@ -20,6 +20,13 @@ export interface HeroCamera {
   fov: number
 }
 
+/**
+ * Landscape `shiftX` is a fraction of the viewport height times this aspect, not of the width: the subject then sits the same
+ * number of pixels off-centre on every wide screen, so a poster captured at one size (scaled to the height) matches the canvas
+ * at any other (card widths are capped in px, so this also suits ultra-wide windows).
+ */
+export const SHIFT_REF_ASPECT = 1.6
+
 export const HERO_CAMERA: HeroCamera = { position: [0, 2.0, 10.4], target: [0, 1.15, -3], fov: 38 }
 
 /** Order of the agent panels from left to right when seen from the doorway (Lead in the middle). */
@@ -109,7 +116,7 @@ export interface HeroPose extends HeroCamera {
  */
 export function heroPoseFor(aspect: number): HeroPose {
   if (aspect >= 1.15) {
-    return { ...HERO_CAMERA, offsetX: 0.235 * aspect, offsetY: 0 }
+    return { ...HERO_CAMERA, offsetX: 0.235 * SHIFT_REF_ASPECT, offsetY: 0 }
   }
   if (aspect >= 0.95) return { ...HERO_CAMERA, offsetX: 0, offsetY: 0 }
   const fov = Math.min(70, (2 * Math.atan(Math.tan((24 * Math.PI) / 180) / aspect) * 180) / Math.PI)

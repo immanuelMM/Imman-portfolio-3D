@@ -1,5 +1,6 @@
 import { useEffect, useMemo } from 'react'
 import { AdditiveBlending, Color, ConeGeometry, DoubleSide, InstancedMesh, Matrix4, ShaderMaterial } from 'three'
+import { excludeFromReflection } from './layers'
 import { ROOM } from './layout'
 
 const vertex = /* glsl */ `
@@ -62,6 +63,7 @@ export default function Haze() {
     mesh.instanceMatrix.needsUpdate = true
     mesh.frustumCulled = false
     mesh.renderOrder = 6
+    excludeFromReflection(mesh)
     return { geometry, material, mesh }
   }, [])
   useEffect(

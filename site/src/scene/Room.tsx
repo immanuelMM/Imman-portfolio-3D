@@ -2,6 +2,7 @@ import { useEffect, useMemo } from 'react'
 import { MeshReflectorMaterial } from '@react-three/drei'
 import { BoxGeometry, Color, InstancedMesh, Matrix4, MeshBasicMaterial, Quaternion, Vector3 } from 'three'
 import { TIER_SETTINGS, type QualityTier } from '../lib/quality'
+import { excludeFromReflection } from './layers'
 import { ROOM } from './layout'
 import { useMaterialMaps } from './roomTextures'
 import { useModel, type PropName } from './useModel'
@@ -151,6 +152,8 @@ function CeilingGear({ tier }: { tier: QualityTier }) {
     }
     ;[-1.35, 1.35].forEach((x, i) => strip(i, x, -1.5, 0.22, 6.5))
     ;[-3, 3].forEach((z, i) => strip(2 + i, 0, z, 2.2, 0.22))
+    // the strips mirror in the floor; the steel above them does not need to
+    for (const mesh of [beams, rungs, rails, housings]) excludeFromReflection(mesh)
     for (const mesh of [beams, rungs, rails, strips, housings]) {
       mesh.instanceMatrix.needsUpdate = true
       mesh.frustumCulled = false
@@ -201,7 +204,7 @@ interface PropProps {
 }
 
 function Prop({ name, tier, position, rotationY = 0, scale = 1, envMapIntensity = 0.8 }: PropProps) {
-  const object = useModel(name, tier, { envMapIntensity, cast: false })
+  const object = useModel(name, tier, { envMapIntensity, cast: false, reflected: false })
   return <primitive object={object} position={position} rotation={[0, rotationY, 0]} scale={scale} />
 }
 

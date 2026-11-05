@@ -1,9 +1,9 @@
 import { CHAPTER_IDS, CHAPTER_SIDES, type ChapterId } from './chapters'
-import { HERO_CAMERA, type AgentPanelSpec, type Vec3 } from './layout'
+import { HERO_CAMERA, SHIFT_REF_ASPECT, type AgentPanelSpec, type Vec3 } from './layout'
 
 /**
- * One camera framing. `shiftX` moves the subject right by that fraction of the viewport width (landscape: room for the
- * content column) and `shiftY` up by that fraction of the height (portrait: subject above the cards), both via
+ * One camera framing. `shiftX` moves the subject right by that fraction of 1.6 x the viewport height (`SHIFT_REF_ASPECT`;
+ * landscape: room for the content column) and `shiftY` up by that fraction of the height (portrait: subject above the cards), both via
  * `camera.setViewOffset` so the perspective stays that of a centred shot. Portrait poses give `hHalf`, the horizontal
  * half-angle (degrees) the shot must fit, from which the vertical fov follows the aspect.
  */
@@ -123,7 +123,7 @@ export function resolvePose(pose: ScenePose, aspect: number): ResolvedPose {
       ? Math.min(70, (2 * Math.atan(Math.tan((pose.hHalf * Math.PI) / 180) / aspect) * 180) / Math.PI)
       : pose.fov
   const shiftX = aspect >= 1.15 ? pose.shiftX : 0
-  return { position: pose.position, target: pose.target, fov, offsetX: shiftX * aspect, offsetY: pose.shiftY }
+  return { position: pose.position, target: pose.target, fov, offsetX: shiftX * SHIFT_REF_ASPECT, offsetY: pose.shiftY }
 }
 
 /**

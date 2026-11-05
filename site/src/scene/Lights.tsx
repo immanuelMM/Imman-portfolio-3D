@@ -37,7 +37,7 @@ export default function Lights({ tier }: { tier: QualityTier }) {
       <pointLight position={[-2.7, 2.7, 0.6]} intensity={18} distance={12} decay={2} color="#c3d2de" />
       <pointLight position={[0, 0.5, -3.9]} intensity={5} distance={9} decay={2} color="#6fe0f2" />
       <pointLight position={[2.7, 2.7, 0.6]} intensity={18} distance={12} decay={2} color="#c3d2de" />
-      <pointLight position={[0, 1.1, 5.4]} intensity={10} distance={5} decay={2} color="#ffb06a" />
+      <pointLight position={[0, 1.1, 5.4]} intensity={3.2} distance={5} decay={2} color="#ffcf9e" />
     </group>
   )
 }

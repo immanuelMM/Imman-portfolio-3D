@@ -30,13 +30,27 @@
     touch-action: pan-y;
   }
 
+  /*
+   * The poster is a real render of the About frame, positioned like the canvas (cover, centred) so the crossfade from poster
+   * to canvas moves nothing. Three crops chosen by aspect ratio: landscape (the default), tablet portrait, phone portrait.
+   * The colour behind it is the room's dark base, shown while the image loads.
+   */
   .scene-poster {
     position: absolute;
     inset: 0;
-    /* Stand-in until the posters are captured from the real scene (S3): a dim room with a cyan glow. */
-    background:
-      radial-gradient(ellipse 60% 40% at 50% 38%, rgb(94 231 255 / 0.18), transparent 70%),
-      linear-gradient(180deg, #0b1016 0%, #07090d 55%, #05070a 100%);
+    background: #05080c var(--poster-landscape) center / cover no-repeat;
+  }
+
+  @media (orientation: portrait) {
+    .scene-poster {
+      background-image: var(--poster-phone);
+    }
+  }
+
+  @media (min-aspect-ratio: 3/5) and (orientation: portrait) {
+    .scene-poster {
+      background-image: var(--poster-tablet);
+    }
   }
 
   #scene[data-scene-state='ready'] #scene-canvas,

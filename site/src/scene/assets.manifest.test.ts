@@ -2,8 +2,9 @@ import { existsSync } from 'node:fs'
 import path from 'node:path'
 import { describe, expect, it } from 'vitest'
 import modelManifest from '../../public/models/manifest.json'
+import screenManifest from '../../public/screens/manifest.json'
 import textureManifest from '../../public/textures/manifest.json'
-import { creditsFrom } from '../data/credits'
+import { credits, creditsFrom } from '../data/credits'
 import { TIER_SETTINGS } from '../lib/quality'
 
 const pub = path.join(__dirname, '..', '..', 'public')
@@ -46,6 +47,20 @@ describe('3D asset manifests', () => {
     expect(desktop).toBeLessThan(1.5 * 1024 * 1024)
     expect(phone).toBeLessThan(800 * 1024)
     expect(TIER_SETTINGS.low.textureSet).toBe('phone')
+  })
+
+  it('lists the project-screen atlas as the authors own work, with both files shipped', () => {
+    expect(ALLOWED).toContain(screenManifest.licence)
+    expect(screenManifest.licence).toBe('owned')
+    for (const f of screenManifest.files) expect(existsSync(path.join(pub, f.file))).toBe(true)
+  })
+
+  it('credits every third-party source in the footer data, and nothing that is not in a manifest', () => {
+    const sources = new Set(
+      [...modelManifest.models, ...textureManifest.textures].filter((e) => e.licence !== 'owned').map((e) => e.source),
+    )
+    const credited = new Set(credits.filter((c) => /polyhaven/.test(c.url)).map((c) => c.url))
+    expect(credited).toEqual(sources)
   })
 
   it('builds one credit per distinct source', () => {

@@ -1,8 +1,21 @@
 import { useEffect, useMemo } from 'react'
-import { BoxGeometry, Color, Euler, InstancedMesh, Matrix4, Quaternion, Vector3, type CanvasTexture } from 'three'
+import {
+  BoxGeometry,
+  Color,
+  Euler,
+  InstancedMesh,
+  Matrix4,
+  Mesh,
+  MeshStandardMaterial,
+  Quaternion,
+  Vector3,
+  type CanvasTexture,
+} from 'three'
 import { RoundedBoxGeometry } from 'three/examples/jsm/geometries/RoundedBoxGeometry.js'
 import { type QualityTier } from '../lib/quality'
+import { buildConsoleDetail, buildEdgeLight, cableGeometry, cableSpecs } from './consoleDetail'
 import { createKeyboardTexture, createScreenTexture } from './consoleTextures'
+import { excludeFromReflection } from './layers'
 import { CONSOLE } from './layout'
 import { useMaterialMaps } from './roomTextures'
 
@@ -104,54 +117,104 @@ function Monitors({ screens }: { screens: CanvasTexture[] }) {
   )
 }
 
-/** The operator console: a dark metal desk with a satin black top, three monitors, a keyboard and an under-lit front edge. */
+/** Three cables lying in the tray: one InstancedMesh with an instance colour each. */
+function useCables(bw: number, bh: number, bd: number): InstancedMesh {
+  return useMemo(() => {
+    const specs = cableSpecs(bd, bh)
+    const material = new MeshStandardMaterial({ roughness: 0.55, metalness: 0.1 })
+    const mesh = new InstancedMesh(cableGeometry(bw - 0.32), material, specs.length)
+    const m = new Matrix4()
+    const colour = new Color()
+    specs.forEach((c, i) => {
+      mesh.setMatrixAt(i, m.makeTranslation(0, c.y, c.z))
+      mesh.setColorAt(i, colour.setRGB(...c.colour))
+    })
+    mesh.instanceMatrix.needsUpdate = true
+    if (mesh.instanceColor) mesh.instanceColor.needsUpdate = true
+    mesh.frustumCulled = false
+    return excludeFromReflection(mesh)
+  }, [bw, bh, bd])
+}
+
+/**
+ * The operator console: a steel desk (Poly Haven plate PBR) under a bevelled satin-black desktop with a clear coat, a trim
+ * band, a cable tray with three cables under the front overhang, a backlit keyboard with its wrist rest, a mouse, three
+ * monitors, and an under-lit front edge that is cool cyan with a short warm amber run. The small hardware is two draw calls
+ * in all (merged geometry + cables), neither drawn in the floor's mirror pass.
+ */
 export default function Console({ tier }: { tier: QualityTier }) {
   const plate = useMaterialMaps('plate', tier, PLATE_REPEAT)
   const [bw, bh, bd] = CONSOLE.size
   const bodyGeo = useMemo(() => new RoundedBoxGeometry(bw, bh, bd, 3, 0.03), [bw, bh, bd])
-  const topGeo = useMemo(() => new RoundedBoxGeometry(bw + 0.1, 0.05, bd + 0.1, 3, 0.02), [bw, bd])
+  const topGeo = useMemo(() => new RoundedBoxGeometry(bw + 0.1, 0.05, bd + 0.1, 4, 0.024), [bw, bd])
+  const detailGeo = useMemo(() => buildConsoleDetail(bw, bh, bd), [bw, bh, bd])
+  const edgeGeo = useMemo(() => buildEdgeLight(bw, bd), [bw, bd])
+  const cables = useCables(bw, bh, bd)
+  const detail = useMemo(() => {
+    const material = new MeshStandardMaterial({ vertexColors: true, roughness: 0.42, metalness: 0.75 })
+    const mesh = new Mesh(detailGeo, material)
+    mesh.frustumCulled = false
+    return excludeFromReflection(mesh)
+  }, [detailGeo])
   const screens = useMemo(() => [createScreenTexture(0), createScreenTexture(1), createScreenTexture(2)], [])
   const keyboard = useMemo(() => createKeyboardTexture(), [])
   useEffect(
     () => () => {
       bodyGeo.dispose()
       topGeo.dispose()
+      detailGeo.dispose()
+      edgeGeo.dispose()
+      cables.geometry.dispose()
+      ;(cables.material as MeshStandardMaterial).dispose()
+      cables.dispose()
+      ;(detail.material as MeshStandardMaterial).dispose()
       screens.forEach((s) => s.dispose())
       keyboard.dispose()
     },
-    [bodyGeo, topGeo, screens, keyboard],
+    [bodyGeo, topGeo, detailGeo, edgeGeo, cables, detail, screens, keyboard],
   )
   const [px, , pz] = CONSOLE.position
+  const kbZ = bd / 2 - 0.16
   return (
     <group position={[px, 0, pz]}>
       <mesh geometry={bodyGeo} position={[0, bh / 2, 0]} receiveShadow>
         <meshStandardMaterial
-          color="#aebbc8"
-          map={plate.map}
+          color="#6a7b8c"
           normalMap={plate.normalMap}
+          normalScale={[0.35, 0.35]}
           roughnessMap={plate.arm}
-          metalnessMap={plate.arm}
-          roughness={0.55}
-          metalness={0.85}
+          roughness={0.62}
+          metalness={0.3}
         />
       </mesh>
       <mesh geometry={topGeo} position={[0, bh + 0.02, 0]} receiveShadow>
-        <meshStandardMaterial color="#020305" roughness={0.22} metalness={0.5} envMapIntensity={1.2} />
+        <meshPhysicalMaterial
+          color="#05070a"
+          normalMap={plate.normalMap}
+          normalScale={[0.12, 0.12]}
+          roughness={0.34}
+          metalness={0.45}
+          clearcoat={0.7}
+          clearcoatRoughness={0.12}
+          envMapIntensity={1.2}
+        />
       </mesh>
-      {/* under-lit front edge */}
-      <mesh position={[0, 0.07, bd / 2 + 0.003]}>
-        <boxGeometry args={[bw - 0.2, 0.014, 0.008]} />
-        <meshBasicMaterial color={new Color(0.3, 1.0, 1.15)} toneMapped={false} />
+      <primitive object={detail} />
+      <primitive object={cables} />
+      {/* under-lit front edge: a cyan run and an amber run */}
+      <mesh geometry={edgeGeo}>
+        <meshBasicMaterial vertexColors toneMapped={false} />
       </mesh>
-      <mesh position={[0, bh + 0.0462, 0.12]} rotation={[-Math.PI / 2, 0, 0]}>
+      {/* backlit keys, warm white, on top of the keyboard body */}
+      <mesh position={[0, bh + 0.0672, kbZ]} rotation={[-Math.PI / 2, 0, 0]}>
         <planeGeometry args={[0.5, 0.16]} />
         <meshStandardMaterial
           map={keyboard}
           roughness={0.5}
           metalness={0.2}
-          emissive="#5ee7ff"
+          emissive="#ffb868"
           emissiveMap={keyboard}
-          emissiveIntensity={0.6}
+          emissiveIntensity={0.55}
         />
       </mesh>
       <Monitors screens={screens} />
