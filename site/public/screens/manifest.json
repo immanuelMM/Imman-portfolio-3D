@@ -1,0 +1,25 @@
+{
+  "cols": 3,
+  "rows": 2,
+  "cells": [
+    "fullstack-agent",
+    "master-brd",
+    "ba-reviewer",
+    "n8n-workflow",
+    "agentic-coding",
+    "prompt-engineering"
+  ],
+  "licence": "owned",
+  "source": "src/assets/ai (the author’s own project art, from AI_Porfolio)",
+  "group": "detail-web",
+  "files": [
+    {
+      "file": "screens/atlas.webp",
+      "bytes": 19726
+    },
+    {
+      "file": "screens/atlas-phone.webp",
+      "bytes": 7498
+    }
+  ]
+}

@@ -1,0 +1,96 @@
+---
+import { agents } from '../data'
+import { agentDetail } from '../data/agentDetail'
+
+/**
+ * The detail card for the seven agents, opened from the workflow strip buttons or from a click on a 3D panel (both call the
+ * same store in lib/agentCards.ts; scripts/agentCards.ts shows and hides it). One dialog, seven sections; the script reveals one.
+ * Desktop: a card on the right. Phone and tablet: a bottom sheet.
+ */
+const details = agents.flatMap((a) => {
+  const d = agentDetail(a.id)
+  return d ? [d] : []
+})
+const nameOf = Object.fromEntries(agents.map((a) => [a.id, a.name]))
+---
+
+<div id="agent-dialog" class="agent-dialog" data-agent-dialog hidden>
+  <div class="agent-dialog__backdrop" data-agent-close></div>
+  <div class="agent-dialog__sheet" role="dialog" aria-modal="true" aria-labelledby="agent-title-lead" tabindex="-1">
+    <div class="agent-dialog__bar">
+      <span class="agent-dialog__grip" aria-hidden="true"></span>
+      <button type="button" class="agent-dialog__close" data-agent-close aria-label="Close details">
+        <svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true" focusable="false">
+          <path
+            d="M6 6l12 12M18 6L6 18"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2.4"
+            stroke-linecap="round"
+          ></path>
+        </svg>
+      </button>
+    </div>
+    <div class="agent-dialog__body">
+      {details.map((d) => (
+        <section class="agent-card" data-agent-card={d.id} aria-labelledby={`agent-title-${d.id}`} hidden>
+          <p class="eyebrow">{d.stepLabel}</p>
+          <h3 id={`agent-title-${d.id}`} class="agent-card__title">
+            {d.name}
+          </h3>
+          <p class="agent-card__role">{d.role}</p>
+          <dl class="agent-card__facts">
+            {d.tools.length > 0 && (
+              <div>
+                <dt class="label">Tools and skills</dt>
+                <dd>
+                  <ul class="chips">
+                    {d.tools.map((t) => (
+                      <li class="chip">{t}</li>
+                    ))}
+                  </ul>
+                </dd>
+              </div>
+            )}
+            {d.receivesFrom.length > 0 && (
+              <div>
+                <dt class="label">Takes over from</dt>
+                <dd>{d.receivesFrom.join(' and ')}</dd>
+              </div>
+            )}
+            {d.handsTo.length > 0 && (
+              <div>
+                <dt class="label">Hands over to</dt>
+                <dd>{d.handsTo.join(' and ')}</dd>
+              </div>
+            )}
+          </dl>
+          <div class="agent-card__nav">
+            {d.prev ? (
+              <button type="button" class="btn btn--ghost" data-agent-go={d.prev}>
+                <span aria-hidden="true">←</span>
+                <span>
+                  <span class="sr-only">Previous agent: </span>
+                  {nameOf[d.prev]}
+                </span>
+              </button>
+            ) : (
+              <span></span>
+            )}
+            {d.next ? (
+              <button type="button" class="btn btn--ghost" data-agent-go={d.next}>
+                <span>
+                  <span class="sr-only">Next agent: </span>
+                  {nameOf[d.next]}
+                </span>
+                <span aria-hidden="true">→</span>
+              </button>
+            ) : (
+              <span></span>
+            )}
+          </div>
+        </section>
+      ))}
+    </div>
+  </div>
+</div>

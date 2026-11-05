@@ -1,4 +1,5 @@
 ---
+import AgentDialog from '../components/AgentDialog.astro'
 import AgentStrip from '../components/AgentStrip.astro'
 import CertCard from '../components/CertCard.astro'
 import ChapterSection from '../components/ChapterSection.astro'
@@ -71,4 +72,5 @@ const { profile, experience, education, aiTools, webSystems, staticProjects, cer
 
   <Footer slot="footer" />
   <CvDocument slot="print" />
+  <AgentDialog slot="dialogs" />
 </Base>

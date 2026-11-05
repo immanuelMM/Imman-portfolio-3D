@@ -89,7 +89,14 @@ function Monitors({ screens }: { screens: CanvasTexture[] }) {
         return (
           <mesh key={i} position={position} rotation={rotation}>
             <planeGeometry args={[m.w, m.h]} />
-            <meshBasicMaterial map={screens[i]} color={SCREEN_GLOW} toneMapped={false} />
+            <meshBasicMaterial
+              map={screens[i]}
+              color={SCREEN_GLOW}
+              toneMapped={false}
+              polygonOffset
+              polygonOffsetFactor={-4}
+              polygonOffsetUnits={-4}
+            />
           </mesh>
         )
       })}

@@ -20,7 +20,7 @@ export const siteData: SiteData = {
   certifications,
 }
 
-export { agents } from './agents'
+export { agents, WORKFLOW_STEPS } from './agents'
 export { credits } from './credits'
 export { categoryLabel } from './skills'
 export { SITE_TITLE, publicSiteUrl } from './site'

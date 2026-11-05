@@ -6,12 +6,14 @@ import { TIER_SETTINGS, type QualityTier } from '../lib/quality'
 import AgentPanels from './AgentPanels'
 import CameraRig from './CameraRig'
 import Console from './Console'
+import DetailGroups from './DetailGroups'
 import Environment from './Environment'
 import Haze from './Haze'
 import { HERO_CAMERA } from './layout'
 import Lights from './Lights'
 import Racks from './Racks'
 import Room, { WallProps } from './Room'
+import { useChapter } from './useChapter'
 
 // Bloom (high tier) is its own chunk: phones and tablets never download it.
 const Bloom = lazy(() => import('./Bloom'))
@@ -41,6 +43,28 @@ function ReadyGate({ motion, onReady }: { motion: boolean; onReady: () => void }
   return null
 }
 
+/** Everything inside the canvas: the chapter ref from native scroll feeds the camera, the panels and the detail groups. */
+function Contents({ tier, motion, onReady }: { tier: QualityTier; motion: boolean; onReady: () => void }) {
+  const chapter = useChapter()
+  return (
+    <>
+      <CameraRig chapter={chapter} motion={motion} />
+      <Suspense fallback={null}>
+        <Environment intensity={0.3} />
+        <Lights tier={tier} />
+        <Room tier={tier} />
+        <WallProps tier={tier} />
+        <Racks tier={tier} motion={motion} />
+        <Console tier={tier} />
+        <AgentPanels tier={tier} motion={motion} chapter={chapter} />
+        <Haze />
+        <ReadyGate motion={motion} onReady={onReady} />
+      </Suspense>
+      <DetailGroups tier={tier} chapter={chapter} motion={motion} />
+    </>
+  )
+}
+
 export default function CommandCenter({ motion, tier, paused, onReady, onLost, onDecline }: CommandCenterProps) {
   const settings = TIER_SETTINGS[tier]
   return (
@@ -66,18 +90,7 @@ export default function CommandCenter({ motion, tier, paused, onReady, onLost, o
       {motion && tier === 'high' && <PerformanceMonitor onDecline={onDecline} />}
       <color attach="background" args={['#05080c']} />
       <fogExp2 attach="fog" args={['#09141d', 0.038]} />
-      <CameraRig />
-      <Suspense fallback={null}>
-        <Environment intensity={0.3} />
-        <Lights tier={tier} />
-        <Room tier={tier} />
-        <WallProps tier={tier} />
-        <Racks tier={tier} motion={motion} />
-        <Console tier={tier} />
-        <AgentPanels tier={tier} motion={motion} />
-        <Haze />
-        <ReadyGate motion={motion} onReady={onReady} />
-      </Suspense>
+      <Contents tier={tier} motion={motion} onReady={onReady} />
       {settings.bloom && (
         <Suspense fallback={null}>
           <Bloom />

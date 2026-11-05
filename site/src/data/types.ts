@@ -55,6 +55,8 @@ export interface Agent {
   id: string
   name: string
   role: string
+  /** Tools and skills the agent works with (from the workspace's agent definitions); omitted when none are listed. */
+  tools?: string[]
 }
 
 export interface SiteData {

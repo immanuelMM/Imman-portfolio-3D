@@ -80,11 +80,13 @@ const seo = buildSeo({
     <CvButtons variant="bar" />
     <p id="cv-toast" class="cv-toast" role="status" aria-live="polite"></p>
     <slot name="print" />
+    <slot name="dialogs" />
     <script>
       import '../scripts/sceneBoot'
       import '../scripts/activeSection'
       import '../scripts/navMenu'
       import '../scripts/cvDownload'
+      import '../scripts/agentCards'
     </script>
   </body>
 </html>

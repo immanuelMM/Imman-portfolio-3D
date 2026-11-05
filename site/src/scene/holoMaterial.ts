@@ -4,6 +4,8 @@ export interface HoloOptions {
   tint?: Color
   /** output multiplier; above 1 the glyph strokes pass the bloom threshold */
   intensity?: number
+  /** strength of the glowing rim at the texture's edge, 0..1 (default 1; 0 for an atlas, whose edges are not the panel's) */
+  rim?: number
 }
 
 const vertex = /* glsl */ `
@@ -21,6 +23,7 @@ const fragment = /* glsl */ `
   uniform float uActive;
   uniform float uFlicker;
   uniform float uIntensity;
+  uniform float uRim;
   varying vec2 vUv;
 
   void main() {
@@ -30,7 +33,7 @@ const fragment = /* glsl */ `
     float sweep = pow(max(0.0, sin((vUv.y * 1.2 - uTime * 0.18) * 6.2831)), 14.0) * 0.35;
     // glowing rim: strongest on the outer few percent of the glass (stands in for a fresnel edge on a flat plane)
     vec2 e = min(vUv, 1.0 - vUv);
-    float rim = smoothstep(0.035, 0.0, min(e.x * 0.55, e.y * 0.3));
+    float rim = smoothstep(0.035, 0.0, min(e.x * 0.55, e.y * 0.3)) * uRim;
     float lum = max(tex.r, max(tex.g, tex.b));
     float glow = lum * (0.45 + 0.85 * uActive) + sweep * tex.a * 0.5;
     vec3 col = tex.rgb * glow * scan * uTint * uIntensity;
@@ -55,6 +58,7 @@ export function createHoloMaterial(map: Texture, opts: HoloOptions = {}): Shader
       uActive: { value: 0.6 },
       uFlicker: { value: 1 },
       uIntensity: { value: opts.intensity ?? 1.6 },
+      uRim: { value: opts.rim ?? 1 },
     },
     vertexShader: vertex,
     fragmentShader: fragment,

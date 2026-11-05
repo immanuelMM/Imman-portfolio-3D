@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { agents } from '../data/agents'
-import { AGENT_PANELS, ARC, HERO_CAMERA, panelFacingError, RACKS, ROOM } from './layout'
+import { AGENT_PANELS, AGENT_PANELS_TALL, ARC, HERO_CAMERA, panelFacingError, RACKS, ROOM } from './layout'
 
 describe('agent panel layout', () => {
   it('has seven panels whose ids match agents.ts', () => {
@@ -43,5 +43,15 @@ describe('agent panel layout', () => {
 
   it('looks from inside the room', () => {
     expect(HERO_CAMERA.position[2]).toBeLessThan(ROOM.front)
+  })
+
+  it('keeps the portrait arc free of overlaps with a visible gap, in the same order', () => {
+    expect(AGENT_PANELS_TALL.map((p) => p.agentId)).toEqual(AGENT_PANELS.map((p) => p.agentId))
+    for (let i = 1; i < AGENT_PANELS_TALL.length; i++) {
+      const a = AGENT_PANELS_TALL[i - 1]
+      const b = AGENT_PANELS_TALL[i]
+      const d = Math.hypot(b.position[0] - a.position[0], b.position[2] - a.position[2])
+      expect(d - a.size[0]).toBeGreaterThan(0.15)
+    }
   })
 })

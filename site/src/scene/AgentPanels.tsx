@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef } from 'react'
+import { useEffect, useMemo, useRef, type RefObject } from 'react'
 import { useFrame, useThree } from '@react-three/fiber'
 import {
   AdditiveBlending,
@@ -20,12 +20,16 @@ import {
   type ShaderMaterial as ShaderMaterialType,
 } from 'three'
 import { agents } from '../data/agents'
-import { TIER_SETTINGS, type QualityTier } from '../lib/quality'
+import { type QualityTier } from '../lib/quality'
+import { agentCards } from '../lib/agentCards'
+import type { ChapterState } from './chapterProgress'
 import { createHoloMaterial } from './holoMaterial'
-import { AGENT_PANELS, PANEL_FLOOR_GAP } from './layout'
+import { AGENT_PANELS, AGENT_PANELS_TALL, ARC, PANEL_FLOOR_GAP } from './layout'
 import { drawAgentPanel, loadPanelFonts, PANEL_CANVAS } from './panelCanvas'
 import { flicker } from './flicker'
 import { useMaterialMaps } from './roomTextures'
+import { usePanelPicking } from './usePanelPicking'
+import { pulseLevel } from './workflow'
 
 let fontsDone = false
 let fontsPromise: Promise<void> | null = null
@@ -68,17 +72,23 @@ const beamVertex = spillVertex
 interface Props {
   tier: QualityTier
   motion: boolean
+  /** the scroll chapter (a ref the render loop reads): the workflow pulse runs in `ai`, panels dim in `contact` */
+  chapter: RefObject<ChapterState>
 }
+
+const damp = (current: number, target: number, dt: number, rate = 6) =>
+  current + (target - current) * (1 - Math.exp(-dt * rate))
 
 const PLATE_REPEAT: [number, number] = [1, 1]
 
 /** The seven agent panels: floating glass slabs on projector bases, each with its drawn holographic face. */
-export default function AgentPanels({ tier, motion }: Props) {
+export default function AgentPanels({ tier, motion, chapter }: Props) {
   useFontsReady()
   const invalidate = useThree((s) => s.invalidate)
   const plate = useMaterialMaps('plate', tier, PLATE_REPEAT)
-  const settings = TIER_SETTINGS[tier]
-  void settings
+  const size = useThree((s) => s.size)
+  const portrait = size.width / size.height < 0.95
+  const panels = portrait ? AGENT_PANELS_TALL : AGENT_PANELS
 
   const holo = useMemo(() => {
     const scale = tier === 'low' ? 0.5 : 1
@@ -99,7 +109,7 @@ export default function AgentPanels({ tier, motion }: Props) {
   }, [tier])
 
   const parts = useMemo(() => {
-    const n = AGENT_PANELS.length
+    const n = panels.length
     const q = new Quaternion()
     const up = new Vector3(0, 1, 0)
     const m = new Matrix4()
@@ -141,7 +151,17 @@ export default function AgentPanels({ tier, motion }: Props) {
     const spills = new InstancedMesh(spillGeo, spillMat, n)
 
     const col = new Color()
-    AGENT_PANELS.forEach((p, i) => {
+    const brightOf = (i: number) => (panels[i].agentId === 'lead' ? 2.2 : 0.8)
+    /** Brightens one panel's four edge bars and floor ring by `level` (0 = idle, 1 = hovered or open): colours only, no extra draw. */
+    const highlight = (i: number, level: number) => {
+      const b = brightOf(i) * (1 + level * 3.2)
+      for (let k = 0; k < 4; k++) bars.setColorAt(i * 4 + k, col.setRGB(0.3 * b, 0.95 * b, 1.0 * b))
+      rings.setColorAt(i, col.setRGB(0.3 * b, 1.0 * b, 1.15 * b))
+      bars.instanceColor!.needsUpdate = true
+      rings.instanceColor!.needsUpdate = true
+    }
+    panels.forEach((p, i) => {
+      const s = p.size[0] / ARC.panelSize[0]
       q.setFromAxisAngle(up, p.rotationY)
       const panelM = new Matrix4().compose(new Vector3(...p.position), q, one)
       const [w, h] = p.size
@@ -162,16 +182,23 @@ export default function AgentPanels({ tier, motion }: Props) {
 
       const floorPos = new Vector3(p.position[0], 0, p.position[2])
       // the projector base sits directly under the glass
-      bases.setMatrixAt(i, m.compose(floorPos.clone().setY(0.045), new Quaternion(), one))
-      rings.setMatrixAt(i, m.compose(floorPos.clone().setY(0.094), new Quaternion(), one))
+      const flat = new Vector3(s, 1, s)
+      bases.setMatrixAt(i, m.compose(floorPos.clone().setY(0.045), new Quaternion(), flat))
+      rings.setMatrixAt(i, m.compose(floorPos.clone().setY(0.094), new Quaternion(), flat))
       rings.setColorAt(i, col.setRGB(0.3 * bright, 1.0 * bright, 1.15 * bright))
       beams.setMatrixAt(
         i,
-        local.makeTranslation(0, PANEL_FLOOR_GAP / 2 + 0.09, 0).premultiply(m.compose(floorPos, q, one)),
+        local
+          .makeTranslation(0, PANEL_FLOOR_GAP / 2 + 0.09, 0)
+          .premultiply(m.compose(floorPos, q, new Vector3(s, 1, 1))),
       )
       spills.setMatrixAt(
         i,
-        m.compose(floorPos.clone().setY(0.012), new Quaternion(), new Vector3(lead ? 1.25 : 1, 1, lead ? 1.25 : 1)),
+        m.compose(
+          floorPos.clone().setY(0.012),
+          new Quaternion(),
+          new Vector3(s * (lead ? 1.25 : 1), 1, s * (lead ? 1.25 : 1)),
+        ),
       )
     })
     for (const mesh of [glass, bars, bases, rings, beams, spills]) {
@@ -189,6 +216,7 @@ export default function AgentPanels({ tier, motion }: Props) {
       rings,
       beams,
       spills,
+      highlight,
       dispose: () => {
         for (const g of [glassGeo, barGeo, baseGeo, ringGeo, beamGeo, spillGeo]) g.dispose()
         beamMat.dispose()
@@ -198,7 +226,7 @@ export default function AgentPanels({ tier, motion }: Props) {
         for (const mesh of [glass, bars, bases, rings, beams, spills]) mesh.dispose()
       },
     }
-  }, [])
+  }, [panels])
 
   useEffect(() => () => parts.dispose(), [parts])
   useEffect(
@@ -213,15 +241,50 @@ export default function AgentPanels({ tier, motion }: Props) {
 
   const materials = useRef<ShaderMaterialType[]>([])
   materials.current = holo.map((h) => h.material)
-  useFrame(({ clock }) => {
+
+  // hover (fine pointers) and the open card both light a panel; the levels ease in and out
+  const hovered = usePanelPicking(panels)
+  const levels = useRef<number[]>(panels.map(() => 0))
+  const applied = useRef<number[]>(panels.map(() => 0))
+  const gain = useRef({ pulse: 0, dim: 1 })
+  const selected = useRef<string | null>(agentCards.get().agentId)
+  useEffect(
+    () =>
+      agentCards.subscribe((state) => {
+        selected.current = state.agentId
+        invalidate()
+      }),
+    [invalidate],
+  )
+
+  useFrame(({ clock }, dt) => {
     const t = motion ? clock.elapsedTime : 1.7
+    const chapterId = chapter.current?.chapter
+    const g = gain.current
+    g.pulse = damp(g.pulse, motion && chapterId === 'ai' ? 1 : 0, dt, 3)
+    g.dim = damp(g.dim, chapterId === 'contact' ? 0.4 : 1, dt, 2)
+    let settling = false
     materials.current.forEach((mat, i) => {
-      const lead = AGENT_PANELS[i].agentId === 'lead'
-      const base = lead ? 1.0 : 0.6
+      const id = panels[i]?.agentId
+      const lead = id === 'lead'
+      const base = (lead ? 1.0 : 0.6) * (lead ? 1 : g.dim)
+      const want = id !== undefined && (id === hovered.current || id === selected.current) ? 1 : 0
+      levels.current[i] = damp(levels.current[i] ?? 0, want, dt, 10)
+      if (Math.abs(levels.current[i] - want) > 0.004) settling = true
+      else levels.current[i] = want
+      if (levels.current[i] !== applied.current[i]) {
+        parts.highlight(i, levels.current[i])
+        applied.current[i] = levels.current[i]
+      }
       mat.uniforms.uTime.value = t
-      mat.uniforms.uActive.value = base + (motion ? 0.1 * Math.sin(t * 1.2 + i * 1.7) : 0)
+      mat.uniforms.uActive.value =
+        base +
+        (motion ? 0.1 * Math.sin(t * 1.2 + i * 1.7) : 0) +
+        g.pulse * 0.75 * pulseLevel(id ?? '', t) +
+        levels.current[i] * 1.3
       mat.uniforms.uFlicker.value = motion ? flicker(t, i) : 1
     })
+    if (!motion && settling) invalidate()
   })
 
   return (
@@ -256,7 +319,8 @@ export default function AgentPanels({ tier, motion }: Props) {
         />
       </primitive>
       <primitive object={parts.bars} />
-      {holo.map(({ panel, material }) => {
+      {holo.map(({ material }, i) => {
+        const panel = panels[i]
         const nx = Math.sin(panel.rotationY)
         const nz = Math.cos(panel.rotationY)
         return (

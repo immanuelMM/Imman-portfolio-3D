@@ -1,0 +1,190 @@
+/*
+ * The agent detail card (components/AgentDialog.astro). Phone and tablet: a bottom sheet with big touch targets.
+ * Desktop (>= 1024 wide, landscape): a card on the right while the camera frames the panel on the left.
+ * The backdrop is only lightly dimmed so the open panel stays visible in the 3D scene behind it.
+ */
+@layer components {
+  .agent-dialog {
+    position: fixed;
+    inset: 0;
+    z-index: 60;
+  }
+
+  .agent-dialog[hidden] {
+    display: none;
+  }
+
+  .agent-dialog__backdrop {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, rgb(2 4 7 / 0.05), rgb(2 4 7 / 0.55));
+  }
+
+  .agent-dialog__sheet {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    display: grid;
+    grid-template-rows: auto minmax(0, 1fr);
+    width: min(100%, 640px);
+    max-height: min(68dvh, 600px);
+    margin-inline: auto;
+    padding-bottom: var(--safe-bottom);
+    border: 1px solid color-mix(in srgb, var(--cyan) 35%, var(--line));
+    border-bottom: 0;
+    border-radius: var(--r-xl) var(--r-xl) 0 0;
+    background: color-mix(in srgb, var(--surface) 96%, transparent);
+    box-shadow: 0 -12px 48px rgb(0 0 0 / 0.5);
+    outline: none;
+    animation: agent-sheet-in var(--dur) ease-out;
+  }
+
+  .agent-dialog__bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    min-height: var(--tap);
+    padding: var(--sp-2) var(--sp-2) 0 var(--sp-5);
+  }
+
+  .agent-dialog__grip {
+    width: 44px;
+    height: 4px;
+    border-radius: var(--r-pill);
+    background: var(--line);
+  }
+
+  .agent-dialog__close {
+    display: grid;
+    place-items: center;
+    width: var(--tap);
+    height: var(--tap);
+    border: 1px solid var(--line);
+    border-radius: var(--r-md);
+    background: var(--surface-2);
+    color: var(--text);
+    cursor: pointer;
+  }
+
+  .agent-dialog__close:hover {
+    border-color: var(--cyan);
+    color: var(--cyan);
+  }
+
+  .agent-dialog__body {
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    padding: var(--sp-2) var(--sp-5) var(--sp-5);
+  }
+
+  .agent-card {
+    display: grid;
+    gap: var(--sp-4);
+  }
+
+  .agent-card[hidden] {
+    display: none;
+  }
+
+  .agent-card__title {
+    font-family: var(--font-display);
+    font-size: 1.9rem;
+    line-height: 1.1;
+  }
+
+  .agent-card__role {
+    font-size: 1.05rem;
+  }
+
+  .agent-card__facts {
+    display: grid;
+    gap: var(--sp-4);
+  }
+
+  .agent-card__facts dd {
+    margin-top: var(--sp-2);
+  }
+
+  /* Stays in reach at the foot of a short sheet however far the card is scrolled. */
+  .agent-card__nav {
+    position: sticky;
+    bottom: calc(-1 * var(--sp-5));
+    margin-bottom: calc(-1 * var(--sp-5));
+    padding-block: var(--sp-3) var(--sp-4);
+    background: linear-gradient(180deg, transparent, var(--surface) 24%);
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--sp-3);
+  }
+
+  .agent-card__nav .btn {
+    justify-content: space-between;
+    min-height: var(--tap);
+  }
+
+  /* While a card is open the page content steps back so the framed 3D panel shows (still in the DOM; inert for everyone). */
+  main,
+  .site-footer {
+    transition: opacity var(--dur) ease;
+  }
+
+  html[data-agent-open] main,
+  html[data-agent-open] .site-footer {
+    opacity: 0;
+  }
+
+  html[data-agent-open] .cv-bar {
+    visibility: hidden;
+  }
+
+  @keyframes agent-sheet-in {
+    from {
+      transform: translateY(24px);
+      opacity: 0;
+    }
+  }
+
+  @media (min-width: 1024px) and (orientation: landscape) {
+    .agent-dialog__backdrop {
+      background: linear-gradient(270deg, rgb(2 4 7 / 0.55), rgb(2 4 7 / 0.05) 60%);
+    }
+
+    .agent-dialog__sheet {
+      left: auto;
+      right: var(--gutter);
+      bottom: auto;
+      top: calc(var(--appbar-h) + var(--sp-5));
+      width: min(440px, 38vw);
+      max-height: calc(100dvh - var(--appbar-h) - var(--sp-6) - var(--sp-5));
+      margin: 0;
+      border-bottom: 1px solid color-mix(in srgb, var(--cyan) 35%, var(--line));
+      border-radius: var(--r-xl);
+      box-shadow: 0 12px 48px rgb(0 0 0 / 0.5);
+      animation-name: agent-card-in;
+    }
+
+    .agent-dialog__grip {
+      display: none;
+    }
+
+    .agent-dialog__bar {
+      justify-content: flex-end;
+      min-height: 0;
+      padding: var(--sp-3) var(--sp-3) 0;
+    }
+  }
+
+  @keyframes agent-card-in {
+    from {
+      transform: translateX(24px);
+      opacity: 0;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .agent-dialog__sheet {
+      animation: none;
+    }
+  }
+}

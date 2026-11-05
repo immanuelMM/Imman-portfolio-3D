@@ -35,23 +35,29 @@ export interface AgentPanelSpec {
 }
 
 export const ARC = { centre: [0, 0, 0.6] as Vec3, radius: 3.9, spanDeg: 92, panelSize: [0.94, 1.8] as [number, number] }
+/** Portrait (phone, tablet): a wider, slightly smaller arc so neighbouring panels never overlap in the narrow frame. */
+export const ARC_PORTRAIT = { ...ARC, radius: 3.3, spanDeg: 96, panelSize: [0.75, 1.44] as [number, number] }
 /** The panel glass stands on a base of this height. */
 export const PANEL_FLOOR_GAP = 0.32
 
-export function buildAgentPanels(): AgentPanelSpec[] {
+export type PanelLayout = 'wide' | 'tall'
+
+export function buildAgentPanels(layout: PanelLayout = 'wide'): AgentPanelSpec[] {
+  const arc = layout === 'tall' ? ARC_PORTRAIT : ARC
   const n = PANEL_ORDER.length
   return PANEL_ORDER.map((agentId, i) => {
     const t = i / (n - 1) - 0.5
-    const theta = (t * ARC.spanDeg * Math.PI) / 180
-    const x = ARC.centre[0] + ARC.radius * Math.sin(theta)
-    const z = ARC.centre[2] - ARC.radius * Math.cos(theta)
+    const theta = (t * arc.spanDeg * Math.PI) / 180
+    const x = arc.centre[0] + arc.radius * Math.sin(theta)
+    const z = arc.centre[2] - arc.radius * Math.cos(theta)
     // Panels flank the middle one slightly higher the further out they are: a gentle bowl, not a wall.
-    const y = PANEL_FLOOR_GAP + ARC.panelSize[1] / 2 + Math.abs(t) * 0.12
-    return { agentId, position: [x, y, z], rotationY: -theta, size: ARC.panelSize }
+    const y = PANEL_FLOOR_GAP + arc.panelSize[1] / 2 + Math.abs(t) * 0.12
+    return { agentId, position: [x, y, z], rotationY: -theta, size: arc.panelSize }
   })
 }
 
-export const AGENT_PANELS: AgentPanelSpec[] = buildAgentPanels()
+export const AGENT_PANELS: AgentPanelSpec[] = buildAgentPanels('wide')
+export const AGENT_PANELS_TALL: AgentPanelSpec[] = buildAgentPanels('tall')
 
 export interface RackSpec {
   /** centre of the rack footprint on the floor (y = 0) */
