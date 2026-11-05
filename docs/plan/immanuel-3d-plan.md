@@ -430,4 +430,8 @@ push, and set Pages → Source: GitHub Actions. Verify the live URL loads `ready
 ## Decisions
 _Lead records the user's answers here (date, question #, answer)._
 
--
+- 2026-11-05 Q1/Q2: GitHub Pages project repo `immanuelMM/immanuel-3d` → `https://immanuelmm.github.io/immanuel-3d/`.
+- 2026-11-05 Q4: site shows city (Apalit, Philippines), phone and both emails; no street address, birth date, nationality.
+- 2026-11-05 Q5: n8n card kept, Live link dropped.
+- 2026-11-05 Q3, Q6–Q9: defaults (print-to-PDF only for MVP; password issue raised with the user; §3 agent copy; no chair; hum later).
+- 2026-11-05: user approved building M0 → M1 → M2 → S1, stopping at the S1 screenshot gate.
