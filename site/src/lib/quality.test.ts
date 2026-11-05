@@ -44,3 +44,14 @@ describe('TIER_SETTINGS', () => {
     expect(TIER_SETTINGS.low.dpr).toEqual([1, 1.5])
   })
 })
+
+describe('TIER_SETTINGS (S1 room flags)', () => {
+  it('scales lamps, shadows and maps down the tiers', () => {
+    expect(TIER_SETTINGS.high.ledCount).toBeGreaterThan(TIER_SETTINGS.touch.ledCount)
+    expect(TIER_SETTINGS.touch.ledCount).toBeGreaterThan(TIER_SETTINGS.low.ledCount)
+    expect(TIER_SETTINGS.high.shadows).toBe(true)
+    expect(TIER_SETTINGS.low.shadows).toBe(false)
+    expect(TIER_SETTINGS.high.textureSet).toBe('desktop')
+    expect(TIER_SETTINGS.low.textureSet).toBe('phone')
+  })
+})

@@ -1,0 +1,154 @@
+{
+  "models": [
+    {
+      "name": "camera",
+      "group": "room-first",
+      "instances": 1,
+      "file": "models/{variant}/camera.glb",
+      "bytes": {
+        "desktop": 65460,
+        "phone": 39236
+      },
+      "triangles": {
+        "desktop": 3001,
+        "phone": 1501
+      },
+      "bounds": {
+        "min": [
+          -0.085,
+          -0.024,
+          -0.303
+        ],
+        "max": [
+          0.085,
+          0.261,
+          0.25
+        ]
+      },
+      "licence": "CC0-1.0",
+      "source": "https://polyhaven.com/a/security_camera_01",
+      "author": "Alexander Otterbeck, Yann Kervran",
+      "title": "Security Camera 01"
+    },
+    {
+      "name": "powerbox",
+      "group": "room-first",
+      "instances": 1,
+      "file": "models/{variant}/powerbox.glb",
+      "bytes": {
+        "desktop": 100352,
+        "phone": 95820
+      },
+      "triangles": {
+        "desktop": 4019,
+        "phone": 3941
+      },
+      "bounds": {
+        "min": [
+          -0.286,
+          -0.252,
+          -0.047
+        ],
+        "max": [
+          0.175,
+          0.252,
+          0.352
+        ]
+      },
+      "licence": "CC0-1.0",
+      "source": "https://polyhaven.com/a/power_box_01",
+      "author": "Rico Cilliers, Yann Kervran",
+      "title": "Power Box 01"
+    },
+    {
+      "name": "extinguisher",
+      "group": "room-first",
+      "instances": 1,
+      "file": "models/{variant}/extinguisher.glb",
+      "bytes": {
+        "desktop": 74668,
+        "phone": 45032
+      },
+      "triangles": {
+        "desktop": 2997,
+        "phone": 1496
+      },
+      "bounds": {
+        "min": [
+          -0.14,
+          0,
+          -0.123
+        ],
+        "max": [
+          0.14,
+          0.658,
+          0.244
+        ]
+      },
+      "licence": "CC0-1.0",
+      "source": "https://polyhaven.com/a/korean_fire_extinguisher_01",
+      "author": "UM JOORIN",
+      "title": "Korean Fire Extinguisher 01"
+    },
+    {
+      "name": "firealarm",
+      "group": "room-first",
+      "instances": 1,
+      "file": "models/{variant}/firealarm.glb",
+      "bytes": {
+        "desktop": 43580,
+        "phone": 32396
+      },
+      "triangles": {
+        "desktop": 1999,
+        "phone": 1015
+      },
+      "bounds": {
+        "min": [
+          -0.05,
+          -0.077,
+          0
+        ],
+        "max": [
+          0.05,
+          0.066,
+          0.027
+        ]
+      },
+      "licence": "CC0-1.0",
+      "source": "https://polyhaven.com/a/fire_alarm",
+      "author": "Slinc",
+      "title": "Fire Alarm"
+    },
+    {
+      "name": "utilitybox",
+      "group": "room-first",
+      "instances": 2,
+      "file": "models/{variant}/utilitybox.glb",
+      "bytes": {
+        "desktop": 52188,
+        "phone": 31880
+      },
+      "triangles": {
+        "desktop": 3000,
+        "phone": 1500
+      },
+      "bounds": {
+        "min": [
+          -0.26,
+          0,
+          -0.21
+        ],
+        "max": [
+          0.26,
+          1.12,
+          0.222
+        ]
+      },
+      "licence": "CC0-1.0",
+      "source": "https://polyhaven.com/a/utility_box_01",
+      "author": "James Ray Cock",
+      "title": "Utility Box 01"
+    }
+  ]
+}

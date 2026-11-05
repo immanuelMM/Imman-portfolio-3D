@@ -1,0 +1,184 @@
+{
+  "textures": [
+    {
+      "file": "textures/floor-diff.webp",
+      "bytes": 30920,
+      "group": "room-first",
+      "name": "floor-diff",
+      "licence": "CC0-1.0",
+      "source": "https://polyhaven.com/a/metal_plate_02",
+      "author": "Rob Tuytel",
+      "title": "Metal Plate 02"
+    },
+    {
+      "file": "textures/floor-diff-phone.webp",
+      "bytes": 8780,
+      "group": "room-first",
+      "name": "floor-diff",
+      "licence": "CC0-1.0",
+      "source": "https://polyhaven.com/a/metal_plate_02",
+      "author": "Rob Tuytel",
+      "title": "Metal Plate 02"
+    },
+    {
+      "file": "textures/floor-nor.webp",
+      "bytes": 3176,
+      "group": "room-first",
+      "name": "floor-nor",
+      "licence": "CC0-1.0",
+      "source": "https://polyhaven.com/a/metal_plate_02",
+      "author": "Rob Tuytel",
+      "title": "Metal Plate 02"
+    },
+    {
+      "file": "textures/floor-nor-phone.webp",
+      "bytes": 1074,
+      "group": "room-first",
+      "name": "floor-nor",
+      "licence": "CC0-1.0",
+      "source": "https://polyhaven.com/a/metal_plate_02",
+      "author": "Rob Tuytel",
+      "title": "Metal Plate 02"
+    },
+    {
+      "file": "textures/floor-arm.webp",
+      "bytes": 44644,
+      "group": "room-first",
+      "name": "floor-arm",
+      "licence": "CC0-1.0",
+      "source": "https://polyhaven.com/a/metal_plate_02",
+      "author": "Rob Tuytel",
+      "title": "Metal Plate 02"
+    },
+    {
+      "file": "textures/floor-arm-phone.webp",
+      "bytes": 12676,
+      "group": "room-first",
+      "name": "floor-arm",
+      "licence": "CC0-1.0",
+      "source": "https://polyhaven.com/a/metal_plate_02",
+      "author": "Rob Tuytel",
+      "title": "Metal Plate 02"
+    },
+    {
+      "file": "textures/wall-diff.webp",
+      "bytes": 3370,
+      "group": "room-first",
+      "name": "wall-diff",
+      "licence": "CC0-1.0",
+      "source": "https://polyhaven.com/a/factory_wall",
+      "author": "Rob Tuytel",
+      "title": "Factory Wall"
+    },
+    {
+      "file": "textures/wall-diff-phone.webp",
+      "bytes": 1114,
+      "group": "room-first",
+      "name": "wall-diff",
+      "licence": "CC0-1.0",
+      "source": "https://polyhaven.com/a/factory_wall",
+      "author": "Rob Tuytel",
+      "title": "Factory Wall"
+    },
+    {
+      "file": "textures/wall-nor.webp",
+      "bytes": 1636,
+      "group": "room-first",
+      "name": "wall-nor",
+      "licence": "CC0-1.0",
+      "source": "https://polyhaven.com/a/factory_wall",
+      "author": "Rob Tuytel",
+      "title": "Factory Wall"
+    },
+    {
+      "file": "textures/wall-nor-phone.webp",
+      "bytes": 672,
+      "group": "room-first",
+      "name": "wall-nor",
+      "licence": "CC0-1.0",
+      "source": "https://polyhaven.com/a/factory_wall",
+      "author": "Rob Tuytel",
+      "title": "Factory Wall"
+    },
+    {
+      "file": "textures/wall-arm.webp",
+      "bytes": 3312,
+      "group": "room-first",
+      "name": "wall-arm",
+      "licence": "CC0-1.0",
+      "source": "https://polyhaven.com/a/factory_wall",
+      "author": "Rob Tuytel",
+      "title": "Factory Wall"
+    },
+    {
+      "file": "textures/wall-arm-phone.webp",
+      "bytes": 1050,
+      "group": "room-first",
+      "name": "wall-arm",
+      "licence": "CC0-1.0",
+      "source": "https://polyhaven.com/a/factory_wall",
+      "author": "Rob Tuytel",
+      "title": "Factory Wall"
+    },
+    {
+      "file": "textures/plate-diff.webp",
+      "bytes": 11080,
+      "group": "room-first",
+      "name": "plate-diff",
+      "licence": "CC0-1.0",
+      "source": "https://polyhaven.com/a/metal_plate",
+      "author": "Rob Tuytel",
+      "title": "Metal Plate"
+    },
+    {
+      "file": "textures/plate-diff-phone.webp",
+      "bytes": 3814,
+      "group": "room-first",
+      "name": "plate-diff",
+      "licence": "CC0-1.0",
+      "source": "https://polyhaven.com/a/metal_plate",
+      "author": "Rob Tuytel",
+      "title": "Metal Plate"
+    },
+    {
+      "file": "textures/plate-nor.webp",
+      "bytes": 8232,
+      "group": "room-first",
+      "name": "plate-nor",
+      "licence": "CC0-1.0",
+      "source": "https://polyhaven.com/a/metal_plate",
+      "author": "Rob Tuytel",
+      "title": "Metal Plate"
+    },
+    {
+      "file": "textures/plate-nor-phone.webp",
+      "bytes": 2318,
+      "group": "room-first",
+      "name": "plate-nor",
+      "licence": "CC0-1.0",
+      "source": "https://polyhaven.com/a/metal_plate",
+      "author": "Rob Tuytel",
+      "title": "Metal Plate"
+    },
+    {
+      "file": "textures/plate-arm.webp",
+      "bytes": 15720,
+      "group": "room-first",
+      "name": "plate-arm",
+      "licence": "CC0-1.0",
+      "source": "https://polyhaven.com/a/metal_plate",
+      "author": "Rob Tuytel",
+      "title": "Metal Plate"
+    },
+    {
+      "file": "textures/plate-arm-phone.webp",
+      "bytes": 3948,
+      "group": "room-first",
+      "name": "plate-arm",
+      "licence": "CC0-1.0",
+      "source": "https://polyhaven.com/a/metal_plate",
+      "author": "Rob Tuytel",
+      "title": "Metal Plate"
+    }
+  ]
+}

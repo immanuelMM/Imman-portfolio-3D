@@ -1,7 +1,6 @@
 # immanuel-3d assets and measurements
 
-The 3D asset list (Poly Haven models and textures, manifests, credits) is added in S1. This file records what exists
-after M0-M2.
+This file records every asset, its licence and the measured sizes, up to S1 (hero room).
 
 ## Content
 | Asset | Source | Licence | Use |
@@ -24,3 +23,54 @@ woff2 only.
 
 The `docx` package runs in the browser as is: the Word export is verified in Chrome by `site/e2e/cv.spec.mjs` (download
 `Immanuel_Mahusay_CV.docx`, 16 KB) and in Node by `cv.privacy.test.ts`.
+
+## 3D assets (S1)
+All Poly Haven files are CC0 1.0 (no credit required; credited in the footer anyway). Raw downloads live in the git-ignored
+`assets-raw/polyhaven/<id>/` (MD5 verified by `scripts/fetch-polyhaven.mjs`, `assets-raw/lock.json`). Shipped files are built by
+`scripts/build-models.mjs` and `scripts/build-textures.mjs` and listed in `public/models/manifest.json` and
+`public/textures/manifest.json`; the footer credits and `assets.manifest.test.ts` read those manifests.
+
+### Textures (`public/textures/`, WebP; desktop base 1024/512, phone one step down; normal and ORM maps half the base size)
+| Name | Poly Haven asset | Author | Used for | Desktop KB | Phone KB |
+|---|---|---|---|---|---|
+| `floor-*` | [metal_plate_02](https://polyhaven.com/a/metal_plate_02) | Rob Tuytel | raised-floor tiles (its panel seams read as tiles) | 77 | 22 |
+| `wall-*` | [factory_wall](https://polyhaven.com/a/factory_wall) | Rob Tuytel | back and side walls (corrugated panels) | 8 | 3 |
+| `plate-*` | [metal_plate](https://polyhaven.com/a/metal_plate) | Rob Tuytel | rack bodies, console, panel bases, ceiling steel | 34 | 10 |
+
+Build-time grading: the raw scans are rusty and saturated, so each diffuse map is desaturated to 0.1-0.12 and multiplied by a
+blue-grey tint (`build-textures.mjs`). Total 119 KB desktop / 35 KB phone. `concrete_floor_painted` was downloaded and
+rejected (grimy, brown); its raw files are not shipped.
+
+### Models (`public/models/{desktop,phone}/`, Meshopt + WebP)
+| File | Poly Haven asset | Author | Raw tris | Desktop (KB / tris) | Phone (KB / tris) | Where |
+|---|---|---|---|---|---|---|
+| `camera.glb` | [security_camera_01](https://polyhaven.com/a/security_camera_01) | Alexander Otterbeck, Yann Kervran | 13,571 | 64 / 3,001 | 38 / 1,501 | back wall, high right |
+| `powerbox.glb` | [power_box_01](https://polyhaven.com/a/power_box_01) | Rico Cilliers, Yann Kervran | 21,272 | 98 / 4,019 | 94 / 3,941 | back wall, left |
+| `extinguisher.glb` | [korean_fire_extinguisher_01](https://polyhaven.com/a/korean_fire_extinguisher_01) | UM JOORIN | 9,913 | 73 / 2,997 | 44 / 1,496 | back wall, right |
+| `firealarm.glb` | [fire_alarm](https://polyhaven.com/a/fire_alarm) | Slinc | 2,705 | 43 / 1,999 | 32 / 1,015 | back wall, right |
+| `utilitybox.glb` | [utility_box_01](https://polyhaven.com/a/utility_box_01) | James Ray Cock | 4,404 | 51 / 3,000 | 31 / 1,500 | back corners (2 instances) |
+
+Dropped: `modular_airduct_rectangular_01` (a loose kit of duct segments: simplified to 6.8k tris it read as floating
+junk under the ceiling, 212 KB). Not fetched (not needed in the hero): `utility_box_02`,
+`metal_office_desk`, `modular_electric_cables` (S2 can pull them for the education corner).
+
+### Written for this project (0 KB, drawn or built at runtime)
+Rack bodies, rack front texture and its derived normal map (`rackTexture.ts`), status LEDs (`leds.ts`, shader blink), the seven
+agent panels (glass slab, hologram shader `holoMaterial.ts`, face canvas `panelCanvas.ts`), console and monitors
+(`consoleTextures.ts`), ceiling beams, cable-tray rungs and light strips, light shafts (`Haze.tsx`), the procedural
+reflection environment (`Environment.tsx`, no HDRI). The agent glyphs are drawn strokes, not third-party icons.
+
+## First-frame budget (S1, measured)
+| | Desktop (high) | Touch (portrait tablet) | Phone (low) | Budget |
+|---|---|---|---|---|
+| Models + textures shipped for the first frame | 447 KB (328 + 119) | 447 KB | 274 KB (239 + 35) | 1.5 MB / 800 KB |
+| Draw calls per frame (`gl.info`, incl. shadow and mirror passes) | 120 | 51 | 52 | 120 / 70 |
+| Triangles per frame | 53,026 | 27,078 | 9,927 | 100k / 60k |
+| Lazy scene chunk (gzip) | 338.9 KB | same | same | 400 KB |
+| Bloom chunk (gzip, high only) | 23.8 KB | not loaded | not loaded | 30 KB |
+| Eager JS (gzip) | 2.8 KB | same | same | 60 KB |
+
+How draw calls were read: `gl.info.autoReset = false`, `reset()` on one rAF, read on the next. The high-tier figure includes the
+reflector floor's mirror pass, the shadow pass and the bloom passes; the touch and phone tiers have no mirror or bloom. Triangle
+counts are for the same frame. (A dev-only handle on `window` was used for the measurement and removed before commit.)
+Time to `ready` with software WebGL (swiftshader, 1280x800): 33 s, mostly shader compilation; a real GPU is far faster.

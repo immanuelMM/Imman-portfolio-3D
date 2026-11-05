@@ -12,15 +12,26 @@ async function run(label, args) {
   const errors = []
   page.on('request', (r) => /SceneRoot/.test(r.url()) && chunks.push(r.url()))
   page.on('console', (m) => m.type() === 'error' && !/THREE\.Clock/.test(m.text()) && errors.push(m.text()))
+  const t0 = Date.now()
   await page.goto(url)
   await page.mouse.wheel(0, 200)
   await page.waitForFunction(
     () => ['ready', 'still', 'poster', 'lost'].includes(document.getElementById('scene')?.dataset.sceneState ?? ''),
     null,
-    { timeout: 30000 },
+    { timeout: 150000 }, // software WebGL compiles the full room slowly (S1)
   )
   const state = await page.evaluate(() => document.getElementById('scene').dataset.sceneState)
-  console.log(label, '->', state, '| scene chunk requests:', chunks.length, '| console errors:', errors.length)
+  console.log(
+    label,
+    '->',
+    state,
+    '| after',
+    Math.round((Date.now() - t0) / 1000) + 's',
+    '| scene chunk requests:',
+    chunks.length,
+    '| console errors:',
+    errors.length,
+  )
   errors.forEach((e) => console.log('   ', e))
   await browser.close()
 }
